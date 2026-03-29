@@ -28,6 +28,10 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-branchpulse}:${POSTGRES_PASSWORD:-branchpulse}@db:5432/${POSTGRES_DB:-branchpulse}?schema=public
       NODE_ENV: production
+      OLLAMA_URL: http://host.docker.internal:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:1.5b}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       db:
         condition: service_healthy
