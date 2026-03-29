@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
+import { getDataScope } from '@/lib/data-scope';
 
 export async function GET(_request: NextRequest) {
   try {
+    const user = await getSession();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const branchScope = getDataScope(user, 'branch');
+    const auditScope = getDataScope(user, 'audit');
+    const issueScope = getDataScope(user, 'issue');
+    const escalationScope = getDataScope(user, 'escalation');
+
     // Run all queries in parallel for performance
     const [
       activeBranchesData,
@@ -12,37 +22,39 @@ export async function GET(_request: NextRequest) {
       regionalPerformance,
       recentEscalations,
     ] = await Promise.all([
-      // Active branches with compliance scores
+      // Active branches with compliance scores (scoped)
       prisma.branch.findMany({
-        where: { status: 'ACTIVE' },
+        where: { status: 'ACTIVE', ...branchScope },
         select: { id: true, complianceScore: true },
       }),
 
-      // Audit counts by status
+      // Audit counts by status (scoped)
       prisma.audit.groupBy({
         by: ['status'],
+        where: { ...auditScope },
         _count: { id: true },
       }),
 
-      // Open issues count
+      // Open issues count (scoped)
       prisma.issue.count({
         where: {
           status: { in: ['OPEN', 'IN_PROGRESS'] },
+          ...issueScope,
         },
       }),
 
-      // Escalated items count (unresolved escalations)
+      // Escalated items count (unresolved escalations, scoped)
       prisma.escalation.count({
-        where: { resolvedAt: null },
+        where: { resolvedAt: null, ...escalationScope },
       }),
 
-      // Regional performance: average compliance per region
+      // Regional performance: average compliance per region (scoped)
       prisma.region.findMany({
         include: {
           areas: {
             include: {
               branches: {
-                where: { status: 'ACTIVE' },
+                where: { status: 'ACTIVE', ...branchScope },
                 select: { complianceScore: true },
               },
             },
@@ -50,9 +62,9 @@ export async function GET(_request: NextRequest) {
         },
       }),
 
-      // Recent escalations
+      // Recent escalations (scoped)
       prisma.escalation.findMany({
-        where: { resolvedAt: null },
+        where: { resolvedAt: null, ...escalationScope },
         include: {
           issue: {
             select: {

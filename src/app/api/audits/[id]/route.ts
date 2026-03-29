@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
+import { getDataScope } from '@/lib/data-scope';
+import { checkPermission } from '@/lib/rbac';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -8,10 +11,15 @@ export async function GET(
   context: RouteContext
 ) {
   try {
+    const user = await getSession();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const scope = getDataScope(user, 'audit');
+
     const { id } = await context.params;
 
-    const audit = await prisma.audit.findUnique({
-      where: { id },
+    const audit = await prisma.audit.findFirst({
+      where: { id, ...scope },
       include: {
         branch: {
           select: {
@@ -75,10 +83,18 @@ export async function PATCH(
   context: RouteContext
 ) {
   try {
+    const user = await getSession();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!checkPermission(user.role, 'update')) {
+      return NextResponse.json({ error: 'Forbidden', code: 'FORBIDDEN' }, { status: 403 });
+    }
+
+    const scope = getDataScope(user, 'audit');
+
     const { id } = await context.params;
     const body = await request.json();
 
-    const existing = await prisma.audit.findUnique({ where: { id } });
+    const existing = await prisma.audit.findFirst({ where: { id, ...scope } });
     if (!existing) {
       return NextResponse.json(
         { error: 'Audit not found' },

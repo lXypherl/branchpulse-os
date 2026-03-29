@@ -85,6 +85,7 @@ model Region {
   organization   Organization @relation(fields: [organizationId], references: [id])
 
   areas Area[]
+  users User[] @relation("UserRegion")
 
   @@index([organizationId])
   @@index([name])
@@ -97,6 +98,7 @@ model Area {
   region   Region @relation(fields: [regionId], references: [id])
 
   branches Branch[]
+  users    User[] @relation("UserArea")
 
   @@index([regionId])
   @@index([name])
@@ -118,10 +120,11 @@ model Branch {
   area    Area  @relation(fields: [areaId], references: [id])
   manager User? @relation("BranchManager", fields: [managerId], references: [id])
 
-  audits        Audit[]
-  issues        Issue[]
-  promoChecks   PromoCheck[]
-  stockRequests StockRequest[]
+  audits          Audit[]
+  issues          Issue[]
+  promoChecks     PromoCheck[]
+  stockRequests   StockRequest[]
+  userAssignments User[] @relation("UserBranch")
 
   @@index([areaId])
   @@index([managerId])
@@ -135,11 +138,19 @@ model Branch {
 // ---------------------------------------------------------------------------
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  role      UserRole
-  avatarUrl String?
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  role         UserRole
+  avatarUrl    String?
+  passwordHash String?
+  regionId     String?
+  areaId       String?
+  branchId     String?
+
+  region   Region? @relation("UserRegion", fields: [regionId], references: [id])
+  area     Area?   @relation("UserArea", fields: [areaId], references: [id])
+  branch   Branch? @relation("UserBranch", fields: [branchId], references: [id])
 
   managedBranches    Branch[]       @relation("BranchManager")
   conductedAudits    Audit[]        @relation("Auditor")
@@ -153,6 +164,9 @@ model User {
 
   @@index([email])
   @@index([role])
+  @@index([regionId])
+  @@index([areaId])
+  @@index([branchId])
 }
 
 // ---------------------------------------------------------------------------

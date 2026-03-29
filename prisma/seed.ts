@@ -1,9 +1,17 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
+async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 10);
+}
+
 async function main() {
   console.log('Seeding BranchPulse OS database...');
+
+  // Hash the default password once and reuse for all users
+  const defaultPasswordHash = await hashPassword('password123');
 
   // ---------------------------------------------------------------------------
   // Organization
@@ -41,7 +49,7 @@ async function main() {
   console.log('Created 8 areas');
 
   // ---------------------------------------------------------------------------
-  // Users
+  // Users (pass 1: create without hierarchy links)
   // ---------------------------------------------------------------------------
   const users = await Promise.all([
     prisma.user.create({
@@ -50,6 +58,7 @@ async function main() {
         email: 'sandra.chen@xyloquent.com',
         role: 'HQ_DIRECTOR',
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=sandra',
+        passwordHash: defaultPasswordHash,
       },
     }),
     prisma.user.create({
@@ -58,6 +67,7 @@ async function main() {
         email: 'marcus.williams@xyloquent.com',
         role: 'FRANCHISE_MANAGER',
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=marcus',
+        passwordHash: defaultPasswordHash,
       },
     }),
     prisma.user.create({
@@ -66,6 +76,7 @@ async function main() {
         email: 'priya.sharma@xyloquent.com',
         role: 'REGIONAL_MANAGER',
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=priya',
+        passwordHash: defaultPasswordHash,
       },
     }),
     prisma.user.create({
@@ -74,6 +85,7 @@ async function main() {
         email: 'david.park@xyloquent.com',
         role: 'REGIONAL_MANAGER',
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=david',
+        passwordHash: defaultPasswordHash,
       },
     }),
     prisma.user.create({
@@ -82,6 +94,7 @@ async function main() {
         email: 'emma.torres@xyloquent.com',
         role: 'AREA_MANAGER',
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=emma',
+        passwordHash: defaultPasswordHash,
       },
     }),
     prisma.user.create({
@@ -90,6 +103,7 @@ async function main() {
         email: 'james.okonkwo@xyloquent.com',
         role: 'AREA_MANAGER',
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=james',
+        passwordHash: defaultPasswordHash,
       },
     }),
     prisma.user.create({
@@ -98,6 +112,7 @@ async function main() {
         email: 'rachel.kim@xyloquent.com',
         role: 'BRANCH_MANAGER',
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=rachel',
+        passwordHash: defaultPasswordHash,
       },
     }),
     prisma.user.create({
@@ -106,6 +121,7 @@ async function main() {
         email: 'carlos.rivera@xyloquent.com',
         role: 'BRANCH_MANAGER',
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=carlos',
+        passwordHash: defaultPasswordHash,
       },
     }),
     prisma.user.create({
@@ -114,6 +130,7 @@ async function main() {
         email: 'aisha.patel@xyloquent.com',
         role: 'FIELD_AUDITOR',
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=aisha',
+        passwordHash: defaultPasswordHash,
       },
     }),
     prisma.user.create({
@@ -122,6 +139,7 @@ async function main() {
         email: 'nathan.brooks@xyloquent.com',
         role: 'FIELD_AUDITOR',
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=nathan',
+        passwordHash: defaultPasswordHash,
       },
     }),
     prisma.user.create({
@@ -130,6 +148,7 @@ async function main() {
         email: 'olivia.grant@xyloquent.com',
         role: 'EXECUTIVE_VIEWER',
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=olivia',
+        passwordHash: defaultPasswordHash,
       },
     }),
     prisma.user.create({
@@ -138,6 +157,7 @@ async function main() {
         email: 'leo.fernandez@xyloquent.com',
         role: 'BRANCH_MANAGER',
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=leo',
+        passwordHash: defaultPasswordHash,
       },
     }),
   ]);
@@ -213,6 +233,33 @@ async function main() {
 
   // Lookup helpers
   const branchByCode = (code: string) => branches.find((b) => b.code === code)!;
+
+  // ---------------------------------------------------------------------------
+  // Users (pass 2: link to org hierarchy)
+  // ---------------------------------------------------------------------------
+  await Promise.all([
+    // David Park (REGIONAL_MANAGER) -> North Region
+    prisma.user.update({ where: { id: david.id }, data: { regionId: north.id } }),
+    // Priya Sharma (REGIONAL_MANAGER) -> South Region
+    prisma.user.update({ where: { id: priya.id }, data: { regionId: south.id } }),
+    // Emma Torres (AREA_MANAGER) -> NYC Area
+    prisma.user.update({ where: { id: emma.id }, data: { areaId: nycArea.id } }),
+    // James Okonkwo (AREA_MANAGER) -> Boston Metro
+    prisma.user.update({ where: { id: james.id }, data: { areaId: bostonArea.id } }),
+    // Carlos Rivera (BRANCH_MANAGER) -> Downtown Flagship (first branch in NYC Area)
+    prisma.user.update({ where: { id: carlos.id }, data: { branchId: branchByCode('NYC-001').id } }),
+    // Leo Fernandez (BRANCH_MANAGER) -> Times Square North (second branch in NYC Area)
+    prisma.user.update({ where: { id: leo.id }, data: { branchId: branchByCode('NYC-002').id } }),
+    // Rachel Kim (BRANCH_MANAGER) -> Lexington Ave (first branch in Boston Metro)
+    prisma.user.update({ where: { id: rachel.id }, data: { branchId: branchByCode('BOS-001').id } }),
+    // Aisha Patel (FIELD_AUDITOR) -> Downtown Flagship (for audit assignments)
+    prisma.user.update({ where: { id: aisha.id }, data: { branchId: branchByCode('NYC-001').id } }),
+    // Nathan Brooks (FIELD_AUDITOR) -> no specific branch (audits across branches)
+    // Sandra Chen (HQ_DIRECTOR) -> no hierarchy link needed
+    // Marcus Williams (FRANCHISE_MANAGER) -> no hierarchy link needed
+    // Olivia Grant (EXECUTIVE_VIEWER) -> no hierarchy link needed
+  ]);
+  console.log('Linked users to org hierarchy');
 
   // ---------------------------------------------------------------------------
   // Audit templates

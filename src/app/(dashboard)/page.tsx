@@ -1,6 +1,10 @@
 import prisma from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
+
+const HQ_ROLES = ['HQ_DIRECTOR', 'FRANCHISE_MANAGER', 'EXECUTIVE_VIEWER'];
 
 // ---------------------------------------------------------------------------
 // Data fetching
@@ -30,6 +34,28 @@ async function getDashboardData() {
 // ---------------------------------------------------------------------------
 
 export default async function HQDashboardPage() {
+  const session = await getSession();
+
+  if (!session) redirect('/login');
+
+  // Only HQ-level roles can view the global dashboard
+  if (!HQ_ROLES.includes(session.role)) {
+    return (
+      <div className="min-h-screen bg-background px-6 py-8 lg:px-10">
+        <div className="mx-auto max-w-lg rounded-xl border border-outline-variant/15 bg-surface-container-lowest p-8 shadow-ambient text-center">
+          <span className="material-symbols-outlined text-tertiary mb-3" style={{ fontSize: 48 }}>lock</span>
+          <h1 className="text-xl font-bold text-on-surface mb-2">Access Denied</h1>
+          <p className="text-sm text-on-surface-variant">
+            You don&apos;t have access to the HQ dashboard. Please navigate to your role-specific dashboard.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // EXECUTIVE_VIEWER sees the same dashboard but cannot take actions
+  const isReadOnly = session.role === 'EXECUTIVE_VIEWER';
+
   const { branchCount, auditCount, issueCount, escalationCount, complianceScore, pendingAudits, dbError } = await getDashboardData();
 
   return (
@@ -306,9 +332,11 @@ export default async function HQDashboardPage() {
                       </td>
                       <td className="py-3.5 text-xs text-on-surface-variant">{row.duration}</td>
                       <td className="py-3.5">
-                        <button className="rounded-lg bg-primary px-3.5 py-1.5 text-[11px] font-bold text-on-primary shadow-sm transition-shadow hover:shadow-md">
-                          Intervene
-                        </button>
+                        {!isReadOnly && (
+                          <button className="rounded-lg bg-primary px-3.5 py-1.5 text-[11px] font-bold text-on-primary shadow-sm transition-shadow hover:shadow-md">
+                            Intervene
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -346,12 +374,14 @@ export default async function HQDashboardPage() {
                 24 hours to prevent further score erosion.&rdquo;
               </blockquote>
 
-              <button className="inline-flex items-center gap-1.5 rounded-lg bg-white/20 px-4 py-2 text-xs font-bold text-on-primary-container backdrop-blur-sm transition-colors hover:bg-white/30">
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                  arrow_forward
-                </span>
-                Review Suggested Action
-              </button>
+              {!isReadOnly && (
+                <button className="inline-flex items-center gap-1.5 rounded-lg bg-white/20 px-4 py-2 text-xs font-bold text-on-primary-container backdrop-blur-sm transition-colors hover:bg-white/30">
+                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                    arrow_forward
+                  </span>
+                  Review Suggested Action
+                </button>
+              )}
             </div>
           </div>
 

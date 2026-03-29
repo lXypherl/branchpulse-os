@@ -1,8 +1,19 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getSessionFromCookie } from '@/lib/auth';
+
+const ROLE_DASHBOARD: Record<string, string> = {
+  HQ_DIRECTOR: '/',
+  FRANCHISE_MANAGER: '/',
+  EXECUTIVE_VIEWER: '/',
+  REGIONAL_MANAGER: '/dashboard/regional',
+  AREA_MANAGER: '/dashboard/area',
+  BRANCH_MANAGER: '/dashboard/branch',
+  FIELD_AUDITOR: '/dashboard/auditor',
+};
 
 export function middleware(request: NextRequest) {
-  const session = request.cookies.get('bp_session');
+  const sessionCookie = request.cookies.get('bp_session');
   const { pathname } = request.nextUrl;
 
   // Allow login page and auth API routes
@@ -16,8 +27,27 @@ export function middleware(request: NextRequest) {
   }
 
   // Redirect to login if no session
-  if (!session?.value) {
+  if (!sessionCookie?.value) {
     return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  // Parse session cookie for role-based routing
+  const session = getSessionFromCookie(sessionCookie.value);
+  if (!session) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  // Allow /dashboard/* routes for role-specific dashboards
+  if (pathname.startsWith('/dashboard/')) {
+    return NextResponse.next();
+  }
+
+  // Route root path to role-appropriate dashboard
+  if (pathname === '/') {
+    const target = ROLE_DASHBOARD[session.role];
+    if (target && target !== '/') {
+      return NextResponse.redirect(new URL(target, request.url));
+    }
   }
 
   return NextResponse.next();

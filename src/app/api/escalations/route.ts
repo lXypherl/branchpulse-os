@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
+import { getDataScope } from '@/lib/data-scope';
+import { checkPermission } from '@/lib/rbac';
 
 export async function GET(request: NextRequest) {
   try {
+    const user = await getSession();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const scope = getDataScope(user, 'escalation');
+
     const { searchParams } = new URL(request.url);
     const activeOnly = searchParams.get('active');
 
-    const where: Record<string, unknown> = {};
+    const where: Record<string, unknown> = { ...scope };
 
     if (activeOnly === 'true') {
       where.resolvedAt = null;
@@ -63,6 +71,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getSession();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!checkPermission(user.role, 'create')) {
+      return NextResponse.json({ error: 'Forbidden', code: 'FORBIDDEN' }, { status: 403 });
+    }
+
     const body = await request.json();
     const { issueId, escalatedToId, reason, level } = body as {
       issueId?: string;
@@ -89,10 +103,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const user = await prisma.user.findUnique({
+    const targetUser = await prisma.user.findUnique({
       where: { id: escalatedToId },
     });
-    if (!user) {
+    if (!targetUser) {
       return NextResponse.json(
         { error: `User with id "${escalatedToId}" not found` },
         { status: 400 }

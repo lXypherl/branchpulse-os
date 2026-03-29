@@ -1,13 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
+import { getDataScope } from '@/lib/data-scope';
+import { checkPermission } from '@/lib/rbac';
 
 export async function GET(request: NextRequest) {
   try {
+    const user = await getSession();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const scope = getDataScope(user, 'stockRequest');
+
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const branchId = searchParams.get('branchId');
 
-    const where: Record<string, unknown> = {};
+    const where: Record<string, unknown> = { ...scope };
 
     if (status) {
       where.status = status;
@@ -57,6 +65,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getSession();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!checkPermission(user.role, 'create')) {
+      return NextResponse.json({ error: 'Forbidden', code: 'FORBIDDEN' }, { status: 403 });
+    }
+
     const body = await request.json();
     const { branchId, requestedById, items, notes, status } = body as {
       branchId?: string;
@@ -91,10 +105,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const user = await prisma.user.findUnique({
+    const requestingUser = await prisma.user.findUnique({
       where: { id: requestedById },
     });
-    if (!user) {
+    if (!requestingUser) {
       return NextResponse.json(
         { error: `User with id "${requestedById}" not found` },
         { status: 400 }
