@@ -25,6 +25,11 @@ export async function GET(request: NextRequest) {
       where.branchId = branchId;
     }
 
+    const from = searchParams.get('from');
+    const to = searchParams.get('to');
+    if (from) where.dueDate = { ...((where.dueDate as any) || {}), gte: new Date(from) };
+    if (to) where.dueDate = { ...((where.dueDate as any) || {}), lte: new Date(to) };
+
     const take = Math.min(parseInt(searchParams.get('take') || '100'), 100);
     const skip = parseInt(searchParams.get('skip') || '0');
 

@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import FileUpload from '@/components/shared/FileUpload';
 
 type IssueStatus = 'OPEN' | 'IN_PROGRESS' | 'UNDER_REVIEW' | 'RESOLVED' | 'CLOSED';
 
@@ -9,6 +10,8 @@ interface IssueActionsProps {
   issueId: string;
   currentStatus: string;
   hasCorrectiveAction: boolean;
+  initialEvidenceUrls?: string[];
+  initialCorrectiveAction?: string;
 }
 
 const BTN_STYLES = {
@@ -20,10 +23,14 @@ const BTN_STYLES = {
     'bg-white text-on-background border border-outline-variant/40 hover:bg-surface-container-low transition-colors',
 };
 
-export default function IssueActions({ issueId, currentStatus, hasCorrectiveAction }: IssueActionsProps) {
+export default function IssueActions({ issueId, currentStatus, hasCorrectiveAction, initialEvidenceUrls = [], initialCorrectiveAction = '' }: IssueActionsProps) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [evidenceUrls, setEvidenceUrls] = useState<string[]>(initialEvidenceUrls);
+  const [correctiveAction, setCorrectiveAction] = useState(initialCorrectiveAction);
+  const [savingEvidence, setSavingEvidence] = useState(false);
+  const [savingCorrective, setSavingCorrective] = useState(false);
 
   const status = currentStatus as IssueStatus;
 
@@ -162,16 +169,92 @@ export default function IssueActions({ issueId, currentStatus, hasCorrectiveActi
     }
   }
 
+  async function handleEvidenceChange(urls: string[]) {
+    setEvidenceUrls(urls);
+    setSavingEvidence(true);
+    try {
+      const res = await fetch(`/api/issues/${issueId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ evidenceUrls: urls }),
+      });
+      if (res.ok) {
+        router.refresh();
+      }
+    } catch {
+      // Revert on failure
+      setEvidenceUrls(initialEvidenceUrls);
+    } finally {
+      setSavingEvidence(false);
+    }
+  }
+
+  async function handleSaveCorrectiveAction() {
+    if (!correctiveAction.trim()) return;
+    setSavingCorrective(true);
+    try {
+      const res = await fetch(`/api/issues/${issueId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ correctiveAction }),
+      });
+      if (res.ok) {
+        router.refresh();
+      }
+    } catch {
+      // Save failed silently
+    } finally {
+      setSavingCorrective(false);
+    }
+  }
+
   return (
-    <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 shadow-sm p-6 space-y-3">
-      <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-        Actions
-      </h2>
+    <div className="space-y-4">
+      <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 shadow-sm p-6 space-y-3">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-2">
+          Actions
+        </h2>
 
-      {renderButtons()}
+        {renderButtons()}
 
-      {error && (
-        <p className="text-xs text-tertiary text-center mt-2">{error}</p>
+        {error && (
+          <p className="text-xs text-tertiary text-center mt-2">{error}</p>
+        )}
+      </div>
+
+      {/* Corrective Action */}
+      {status !== 'CLOSED' && (
+        <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 shadow-sm p-6 space-y-3">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-2">
+            Corrective Action
+          </h2>
+          <textarea
+            rows={3}
+            value={correctiveAction}
+            onChange={(e) => setCorrectiveAction(e.target.value)}
+            placeholder="Describe the corrective action taken..."
+            className="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none placeholder:text-outline"
+          />
+          <button
+            onClick={handleSaveCorrectiveAction}
+            disabled={savingCorrective || !correctiveAction.trim()}
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-br from-[#0058bc] to-[#0070eb] text-white shadow-md hover:shadow-lg transition-shadow"
+          >
+            <span className="material-symbols-outlined text-[16px]">save</span>
+            {savingCorrective ? 'Saving...' : 'Save Corrective Action'}
+          </button>
+        </div>
+      )}
+
+      {/* Add Evidence */}
+      {status !== 'CLOSED' && (
+        <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 shadow-sm p-6 space-y-3">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-2">
+            Add Evidence
+            {savingEvidence && <span className="ml-2 text-xs text-blue-500 normal-case font-normal">Saving...</span>}
+          </h2>
+          <FileUpload value={evidenceUrls} onChange={handleEvidenceChange} maxFiles={10} />
+        </div>
       )}
     </div>
   );

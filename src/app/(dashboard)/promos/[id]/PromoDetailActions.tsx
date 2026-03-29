@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import FileUpload from '@/components/shared/FileUpload';
 
 interface ChecklistItem {
   label: string;
@@ -12,18 +13,22 @@ interface PromoDetailActionsProps {
   promoId: string;
   currentStatus: string;
   initialChecklistItems: ChecklistItem[];
+  initialEvidenceUrls?: string[];
 }
 
 export default function PromoDetailActions({
   promoId,
   currentStatus,
   initialChecklistItems,
+  initialEvidenceUrls = [],
 }: PromoDetailActionsProps) {
   const router = useRouter();
   const [items, setItems] = useState<ChecklistItem[]>(initialChecklistItems);
   const [status, setStatus] = useState(currentStatus);
   const [saving, setSaving] = useState(false);
   const [statusSaving, setStatusSaving] = useState(false);
+  const [evidenceUrls, setEvidenceUrls] = useState<string[]>(initialEvidenceUrls);
+  const [savingEvidence, setSavingEvidence] = useState(false);
 
   async function toggleItem(index: number) {
     const updated = items.map((item, i) =>
@@ -65,6 +70,27 @@ export default function PromoDetailActions({
       // Status update failed silently
     } finally {
       setStatusSaving(false);
+    }
+  }
+
+  async function handleEvidenceChange(urls: string[]) {
+    setEvidenceUrls(urls);
+    setSavingEvidence(true);
+    try {
+      const res = await fetch(`/api/promo-checks/${promoId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ evidenceUrls: urls }),
+      });
+      if (res.ok) {
+        router.refresh();
+      } else {
+        setEvidenceUrls(initialEvidenceUrls);
+      }
+    } catch {
+      setEvidenceUrls(initialEvidenceUrls);
+    } finally {
+      setSavingEvidence(false);
     }
   }
 
@@ -115,6 +141,15 @@ export default function PromoDetailActions({
             ))}
           </div>
         )}
+      </div>
+
+      {/* Upload Proof Photo */}
+      <div className="bg-surface-container-lowest rounded-3xl border border-outline-variant/15 p-8 shadow-sm mb-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-bold text-on-surface tracking-tight">Upload Proof Photo</h2>
+          {savingEvidence && <span className="text-xs text-blue-500 font-medium">Saving...</span>}
+        </div>
+        <FileUpload value={evidenceUrls} onChange={handleEvidenceChange} maxFiles={10} />
       </div>
 
       {/* Status Actions Card */}

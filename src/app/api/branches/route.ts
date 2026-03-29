@@ -37,6 +37,11 @@ export async function GET(request: NextRequest) {
       ];
     }
 
+    const from = searchParams.get('from');
+    const to = searchParams.get('to');
+    if (from) where.lastAuditDate = { ...((where.lastAuditDate as any) || {}), gte: new Date(from) };
+    if (to) where.lastAuditDate = { ...((where.lastAuditDate as any) || {}), lte: new Date(to) };
+
     const take = Math.min(parseInt(searchParams.get('take') || '100'), 100);
     const skip = parseInt(searchParams.get('skip') || '0');
 

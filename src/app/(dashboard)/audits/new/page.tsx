@@ -1,6 +1,12 @@
+'use client';
+
 import Link from 'next/link';
+import { useState } from 'react';
+import FileUpload from '@/components/shared/FileUpload';
 
 export default function NewAuditPage() {
+  const [evidenceUrls, setEvidenceUrls] = useState<string[]>([]);
+
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
@@ -80,6 +86,14 @@ export default function NewAuditPage() {
             placeholder="Add any special instructions for this audit..."
             className="w-full px-4 py-3 bg-surface-container-low rounded-xl text-on-surface font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none placeholder:text-outline"
           />
+        </div>
+
+        {/* Evidence Photos */}
+        <div>
+          <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">
+            Evidence Photos (Optional)
+          </label>
+          <FileUpload value={evidenceUrls} onChange={setEvidenceUrls} maxFiles={10} />
         </div>
 
         {/* Actions */}

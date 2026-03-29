@@ -1,6 +1,10 @@
 import prisma from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
+import { AutoEscalateButton } from '@/components/escalations/AutoEscalateButton';
 
 export const dynamic = 'force-dynamic';
+
+const AUTO_ESCALATE_ROLES = ['HQ_DIRECTOR', 'FRANCHISE_MANAGER'];
 
 async function getData() {
   try {
@@ -18,7 +22,8 @@ async function getData() {
 }
 
 export default async function EscalationsPage() {
-  const dbEscalations = await getData();
+  const [dbEscalations, user] = await Promise.all([getData(), getSession()]);
+  const canAutoEscalate = user && AUTO_ESCALATE_ROLES.includes(user.role);
 
   const displayEscalations = dbEscalations.map((esc: any) => ({
     id: esc.id,
@@ -38,9 +43,12 @@ export default async function EscalationsPage() {
           <p className="text-on-surface-variant font-medium">Deterministic routing and SLA enforcement for critical operational issues.</p>
         </div>
         <div className="flex items-center gap-3">
+          {canAutoEscalate && <AutoEscalateButton />}
           <div className="bg-surface-container-low px-4 py-2 rounded-xl flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-tertiary animate-pulse" />
-            <span className="text-xs font-bold text-tertiary uppercase tracking-widest">3 Active Escalations</span>
+            <span className="text-xs font-bold text-tertiary uppercase tracking-widest">
+              {displayEscalations.filter((e) => e.status === 'active').length} Active Escalations
+            </span>
           </div>
         </div>
       </header>
