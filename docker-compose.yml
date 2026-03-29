@@ -1,18 +1,18 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: branchpulse-db
+    container_name: xyloquent-branch-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-branchpulse}
-      POSTGRES_USER: ${POSTGRES_USER:-branchpulse}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-branchpulse}
+      POSTGRES_DB: ${POSTGRES_DB:-xyloquent_branch}
+      POSTGRES_USER: ${POSTGRES_USER:-xyloquent}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-xyloquent}
     ports:
       - "${DB_PORT:-5499}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - xyloquent_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U branchpulse"]
+      test: ["CMD-SHELL", "pg_isready -U xyloquent"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -21,12 +21,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: branchpulse-app
+    container_name: xyloquent-branch-app
     restart: unless-stopped
     ports:
       - "3088:3000"
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-branchpulse}:${POSTGRES_PASSWORD:-branchpulse}@db:5432/${POSTGRES_DB:-branchpulse}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-xyloquent}:${POSTGRES_PASSWORD:-xyloquent}@db:5432/${POSTGRES_DB:-xyloquent_branch}?schema=public
       NODE_ENV: production
       OLLAMA_URL: http://host.docker.internal:11434
       OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:1.5b}
@@ -41,9 +41,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: branchpulse-seed
+    container_name: xyloquent-branch-seed
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-branchpulse}:${POSTGRES_PASSWORD:-branchpulse}@db:5432/${POSTGRES_DB:-branchpulse}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-xyloquent}:${POSTGRES_PASSWORD:-xyloquent}@db:5432/${POSTGRES_DB:-xyloquent_branch}?schema=public
     depends_on:
       db:
         condition: service_healthy
@@ -52,4 +52,4 @@ services:
       - seed
 
 volumes:
-  postgres_data:
+  xyloquent_data:
