@@ -12,6 +12,7 @@ const navItems = [
   { label: 'Promo Checks', icon: 'campaign', href: '/promos' },
   { label: 'Stock Requests', icon: 'inventory_2', href: '/stock-requests' },
   { label: 'SOP Library', icon: 'library_books', href: '/sop' },
+  { label: 'Analytics', icon: 'analytics', href: '/analytics' },
 ];
 
 export default function SideNav() {

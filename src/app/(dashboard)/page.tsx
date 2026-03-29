@@ -31,6 +31,104 @@ async function getDashboardData() {
 }
 
 // ---------------------------------------------------------------------------
+// Anomaly detection for inline alerts
+// ---------------------------------------------------------------------------
+
+interface AnomalyAlert {
+  branchId: string;
+  branchName: string;
+  type: string;
+  score: number;
+  details: string;
+}
+
+async function getAnomalyAlerts(): Promise<AnomalyAlert[]> {
+  try {
+    const branches = await prisma.branch.findMany({
+      where: { status: 'ACTIVE' },
+      select: {
+        id: true,
+        name: true,
+        code: true,
+        complianceScore: true,
+        lastAuditDate: true,
+      },
+    });
+
+    if (branches.length === 0) return [];
+
+    const scores = branches.map((b) => b.complianceScore);
+    const networkAvg = scores.reduce((sum, s) => sum + s, 0) / scores.length;
+    const variance = scores.reduce((sum, s) => sum + Math.pow(s - networkAvg, 2), 0) / scores.length;
+    const stdDev = Math.sqrt(variance);
+    const threshold = networkAvg - 1.5 * stdDev;
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const criticalCounts = await prisma.issue.groupBy({
+      by: ['branchId'],
+      where: {
+        status: { in: ['OPEN', 'IN_PROGRESS'] },
+        severity: { in: ['CRITICAL', 'HIGH'] },
+      },
+      _count: { id: true },
+    });
+    const criticalMap = new Map(criticalCounts.map((c) => [c.branchId, c._count.id]));
+
+    const alerts: AnomalyAlert[] = [];
+
+    for (const branch of branches) {
+      if (branch.complianceScore < threshold && stdDev > 0) {
+        alerts.push({
+          branchId: branch.id,
+          branchName: `${branch.code} ${branch.name}`,
+          type: 'low_score',
+          score: branch.complianceScore,
+          details: `Score ${branch.complianceScore}% is below network threshold`,
+        });
+      }
+
+      const critCount = criticalMap.get(branch.id) ?? 0;
+      if (critCount >= 3) {
+        alerts.push({
+          branchId: branch.id,
+          branchName: `${branch.code} ${branch.name}`,
+          type: 'critical_issues',
+          score: branch.complianceScore,
+          details: `${critCount} open critical/high issues`,
+        });
+      }
+
+      if (!branch.lastAuditDate || branch.lastAuditDate < thirtyDaysAgo) {
+        alerts.push({
+          branchId: branch.id,
+          branchName: `${branch.code} ${branch.name}`,
+          type: 'no_recent_audit',
+          score: branch.complianceScore,
+          details: branch.lastAuditDate
+            ? `Last audit ${Math.round((Date.now() - branch.lastAuditDate.getTime()) / (1000 * 60 * 60 * 24))}d ago`
+            : 'No audit on record',
+        });
+      }
+    }
+
+    // Sort by score ascending (worst first), take top 5
+    alerts.sort((a, b) => a.score - b.score);
+    return alerts.slice(0, 5);
+  } catch {
+    return [];
+  }
+}
+
+const ANOMALY_TYPE_LABELS: Record<string, { label: string; badgeClass: string }> = {
+  low_score: { label: 'Low Score', badgeClass: 'bg-tertiary/10 text-tertiary' },
+  no_recent_audit: { label: 'No Recent Audit', badgeClass: 'bg-[#f59e0b]/10 text-[#d97706]' },
+  score_decline: { label: 'Score Decline', badgeClass: 'bg-[#ea580c]/10 text-[#ea580c]' },
+  critical_issues: { label: 'Critical Issues', badgeClass: 'bg-tertiary/10 text-tertiary' },
+};
+
+// ---------------------------------------------------------------------------
 // Page (Server Component)
 // ---------------------------------------------------------------------------
 
@@ -57,7 +155,11 @@ export default async function HQDashboardPage() {
   // EXECUTIVE_VIEWER sees the same dashboard but cannot take actions
   const isReadOnly = session.role === 'EXECUTIVE_VIEWER';
 
-  const { branchCount, auditCount, issueCount, escalationCount, complianceScore, pendingAudits, dbError } = await getDashboardData();
+  const [dashData, anomalyAlerts] = await Promise.all([
+    getDashboardData(),
+    getAnomalyAlerts(),
+  ]);
+  const { branchCount, auditCount, issueCount, escalationCount, complianceScore, pendingAudits, dbError } = dashData;
 
   return (
     <div className="min-h-screen bg-background px-6 py-8 lg:px-10">
@@ -217,6 +319,63 @@ export default async function HQDashboardPage() {
         </div>
         </Link>
       </section>
+
+      {/* ================================================================ */}
+      {/* 2b. Anomaly Alerts                                               */}
+      {/* ================================================================ */}
+      {anomalyAlerts.length > 0 && (
+        <section className="mb-10">
+          <div className="rounded-xl border border-[#f59e0b]/20 bg-[#fffbeb] p-5 shadow-ambient">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#d97706]" style={{ fontSize: 20 }}>
+                  radar
+                </span>
+                <div>
+                  <h2 className="text-sm font-bold text-on-surface">Anomaly Alerts</h2>
+                  <p className="text-[10px] text-on-surface-variant">
+                    {anomalyAlerts.length} branch{anomalyAlerts.length !== 1 ? 'es' : ''} flagged for attention
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/analytics"
+                className="text-[11px] font-semibold text-primary hover:underline"
+              >
+                View All
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+              {anomalyAlerts.map((alert, i) => {
+                const typeConfig = ANOMALY_TYPE_LABELS[alert.type] ?? ANOMALY_TYPE_LABELS.low_score;
+                return (
+                  <div
+                    key={`${alert.branchId}-${alert.type}-${i}`}
+                    className="flex items-center gap-3 rounded-lg bg-white/70 px-3.5 py-2.5 border border-[#f59e0b]/10"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="text-xs font-semibold text-on-surface truncate">
+                          {alert.branchName}
+                        </p>
+                        <span className={`inline-block rounded-full px-2 py-0.5 text-[9px] font-bold ${typeConfig.badgeClass}`}>
+                          {typeConfig.label}
+                        </span>
+                      </div>
+                      <p className="mt-0.5 text-[10px] text-on-surface-variant truncate">
+                        {alert.details}
+                      </p>
+                    </div>
+                    <span className="flex-shrink-0 text-sm font-bold text-on-surface">
+                      {alert.score}%
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ================================================================ */}
       {/* 3. Main Grid (12-col)                                            */}
