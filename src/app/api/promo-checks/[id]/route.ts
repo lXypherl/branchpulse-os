@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { getDataScope } from '@/lib/data-scope';
 import { checkPermission } from '@/lib/rbac';
+import { logAction } from '@/lib/audit-log';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -138,6 +139,9 @@ export async function PATCH(
         },
       },
     });
+
+    // Fire-and-forget: audit log
+    logAction(user.id, 'PROMO_CHECK_UPDATED', 'PromoCheck', promoCheck.id, `Status: ${existing.status} -> ${promoCheck.status}`);
 
     return NextResponse.json(promoCheck);
   } catch (error) {

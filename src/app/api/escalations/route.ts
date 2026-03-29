@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { getDataScope } from '@/lib/data-scope';
 import { checkPermission } from '@/lib/rbac';
+import { logAction } from '@/lib/audit-log';
+import { createNotification } from '@/lib/notify';
 
 export async function GET(request: NextRequest) {
   try {
@@ -134,6 +136,17 @@ export async function POST(request: NextRequest) {
         },
       });
     });
+
+    // Fire-and-forget: audit log
+    logAction(user.id, 'ESCALATION_CREATED', 'Escalation', escalation.id, `Issue: ${escalation.issue.branch.name} - Level ${escalation.level}`);
+
+    // Notify escalation target user
+    createNotification(
+      escalation.escalatedTo.id,
+      'Escalation Assigned to You',
+      `Issue at ${escalation.issue.branch.name} has been escalated to you (Level ${escalation.level}): ${escalation.reason}`,
+      'escalation'
+    );
 
     return NextResponse.json(escalation, { status: 201 });
   } catch (error) {

@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { getDataScope } from '@/lib/data-scope';
 import { checkPermission } from '@/lib/rbac';
+import { logAction } from '@/lib/audit-log';
+import { createNotification } from '@/lib/notify';
 
 export async function GET(request: NextRequest) {
   try {
@@ -194,6 +196,19 @@ export async function POST(request: NextRequest) {
         audit: { select: { id: true, score: true, status: true } },
       },
     });
+
+    // Fire-and-forget: audit log
+    logAction(user.id, 'ISSUE_CREATED', 'Issue', issue.id, `${issue.title} [${issue.severity}] at ${issue.branch.name}`);
+
+    // Notify assigned user
+    if (issue.assignedTo) {
+      createNotification(
+        issue.assignedTo.id,
+        'New Issue Assigned',
+        `You have been assigned issue "${issue.title}" at ${issue.branch.name}`,
+        'issue_assigned'
+      );
+    }
 
     return NextResponse.json(issue, { status: 201 });
   } catch (error) {

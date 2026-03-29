@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { checkPermission } from '@/lib/rbac';
+import { logAction } from '@/lib/audit-log';
 
 export async function GET(request: NextRequest) {
   try {
@@ -99,6 +100,9 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    // Fire-and-forget: audit log
+    logAction(user.id, 'SOP_CREATED', 'SopDocument', sop.id, `${sop.title} [${sop.category}] v${sop.version}`);
 
     return NextResponse.json(sop, { status: 201 });
   } catch (error) {

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import NotificationBell from './NotificationBell';
 
 const navLinks = [
   { label: 'Dashboard', href: '/' },
@@ -100,12 +101,7 @@ export default function TopNav({ user }: TopNavProps) {
           </div>
 
           {/* Notification Bell */}
-          <button
-            className="relative text-slate-500 hover:text-slate-700 transition-colors"
-            aria-label="Notifications"
-          >
-            <span className="material-symbols-outlined text-[22px]">notifications</span>
-          </button>
+          <NotificationBell />
 
           {/* Settings Gear */}
           <button

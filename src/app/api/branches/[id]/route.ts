@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { getDataScope } from '@/lib/data-scope';
 import { checkPermission } from '@/lib/rbac';
+import { logAction } from '@/lib/audit-log';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -149,6 +150,9 @@ export async function PATCH(
       },
     });
 
+    // Fire-and-forget: audit log
+    logAction(user.id, 'BRANCH_UPDATED', 'Branch', branch.id, `${branch.name} (${branch.code})`);
+
     return NextResponse.json(branch);
   } catch (error) {
     console.error('Failed to update branch:', error);
@@ -193,6 +197,9 @@ export async function DELETE(
       }
       throw error;
     }
+
+    // Fire-and-forget: audit log
+    logAction(user.id, 'BRANCH_DELETED', 'Branch', id, `${existing.name} (${existing.code})`);
 
     return NextResponse.json({ message: 'Branch deleted successfully' });
   } catch (error) {

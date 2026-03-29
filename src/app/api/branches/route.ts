@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { getDataScope } from '@/lib/data-scope';
 import { checkPermission } from '@/lib/rbac';
+import { logAction } from '@/lib/audit-log';
 
 export async function GET(request: NextRequest) {
   try {
@@ -138,6 +139,9 @@ export async function POST(request: NextRequest) {
           },
         },
       });
+
+      // Fire-and-forget: audit log
+      logAction(user.id, 'BRANCH_CREATED', 'Branch', branch.id, `${branch.name} (${branch.code})`);
 
       return NextResponse.json(branch, { status: 201 });
     } catch (error: any) {

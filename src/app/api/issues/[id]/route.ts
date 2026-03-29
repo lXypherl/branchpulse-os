@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { getDataScope } from '@/lib/data-scope';
 import { checkPermission } from '@/lib/rbac';
+import { logAction } from '@/lib/audit-log';
+import { createNotification } from '@/lib/notify';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -133,6 +135,17 @@ export async function PATCH(
       evidenceUrls?: string[];
     };
 
+    // Proof-of-closure enforcement: require corrective action before closing
+    if (status === 'CLOSED') {
+      const effectiveCorrectiveAction = correctiveAction !== undefined ? correctiveAction : existing.correctiveAction;
+      if (!effectiveCorrectiveAction || effectiveCorrectiveAction.trim() === '') {
+        return NextResponse.json(
+          { error: 'Corrective action required before closing' },
+          { status: 400 }
+        );
+      }
+    }
+
     const data: Record<string, unknown> = {};
 
     if (title !== undefined) data.title = title;
@@ -163,6 +176,21 @@ export async function PATCH(
         },
       },
     });
+
+    // Fire-and-forget: audit log
+    const oldStatus = existing.status;
+    const newStatus = status ?? oldStatus;
+    logAction(user.id, 'ISSUE_UPDATED', 'Issue', issue.id, `Status: ${oldStatus} -> ${newStatus}`);
+
+    // Notify assignee on status change
+    if (status && status !== oldStatus && issue.assignedTo) {
+      createNotification(
+        issue.assignedTo.id,
+        'Issue Status Changed',
+        `Issue "${issue.title}" status changed to ${newStatus.toLowerCase()}`,
+        'issue_status'
+      );
+    }
 
     return NextResponse.json(issue);
   } catch (error) {

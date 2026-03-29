@@ -1234,85 +1234,387 @@ async function main() {
   console.log(`  Audit Logs:   ${auditLogs.length}`);
 
   // ---------------------------------------------------------------------------
-  // SOP Documents
+  // SOP Documents (6)
   // ---------------------------------------------------------------------------
-  const sopDocs = await Promise.all([
+  const sopDocuments = await Promise.all([
     prisma.sopDocument.create({
       data: {
         title: 'Food Safety & Hygiene Standards',
-        description: 'Complete food safety protocols for all branch locations including storage, preparation, and serving guidelines.',
+        description: 'Comprehensive food safety and hygiene protocols covering handling, storage, preparation, and serving standards for all branch locations.',
         category: 'Safety',
         version: '4.2',
-        content: `# Food Safety & Hygiene Standards v4.2\n\n## Section 1: Temperature Control\nAll cold storage units must maintain temperatures between 0-4°C. Temperature logs must be recorded every 2 hours during operating hours.\n\n## Section 2: Personal Hygiene\nAll staff must wash hands before handling food, after breaks, and after handling raw products. Hand sanitizer stations must be available at all prep areas.\n\n## Section 3: Cross-Contamination Prevention\nSeparate cutting boards and utensils must be used for raw and cooked foods. Color-coded equipment: red for raw meat, green for vegetables, blue for fish.\n\n## Section 4: Storage Requirements\nFIFO (First In, First Out) must be followed. All items must be dated and labeled. Raw products stored below cooked products.\n\n## Section 5: Cleaning Schedules\nDaily deep clean of all prep surfaces. Weekly equipment sanitization. Monthly ventilation system cleaning.`,
         status: 'CURRENT',
         sections: 12,
-        createdById: users[0].id,
+        createdById: sandra.id,
+        content: `Section 1: Purpose and Scope
+
+This Standard Operating Procedure establishes the food safety and hygiene requirements for all Xyloquent Corp branch locations. It applies to all employees who handle, prepare, store, or serve food products. Compliance with this SOP is mandatory and subject to regular audit verification.
+
+Section 2: Personal Hygiene Requirements
+
+All food-handling staff must wash hands thoroughly with soap and warm water for a minimum of 20 seconds before starting work, after using the restroom, after handling raw products, and after any activity that may contaminate hands. Hand sanitizer may be used as a supplement but not a replacement for hand washing.
+
+Staff must wear clean uniforms, hair nets or caps, and disposable gloves when handling ready-to-eat items. Jewelry (except plain wedding bands) must be removed before entering food preparation areas. Any cuts, burns, or skin infections must be covered with waterproof bandages and gloves.
+
+Section 3: Temperature Control and Cold Chain
+
+All refrigerated products must be stored at or below 40 degrees F (4 degrees C). Frozen products must be maintained at 0 degrees F (-18 degrees C) or below. Temperature logs must be recorded every 4 hours during operating hours using the digital monitoring system.
+
+Hot-held items must maintain a minimum internal temperature of 140 degrees F (60 degrees C). Cold-held items must not exceed 40 degrees F (4 degrees C). Any product found outside these ranges for more than 2 hours must be discarded immediately and documented in the waste log.
+
+Section 4: Receiving and Storage
+
+All deliveries must be inspected upon arrival. Check temperatures of refrigerated and frozen items with a calibrated thermometer. Reject any shipment where cold chain integrity is compromised. Document all receiving inspections in the delivery log.
+
+Apply the FIFO (First In, First Out) rotation method to all inventory. Label all products with received date and use-by date. Store raw proteins on the lowest shelves to prevent cross-contamination. Maintain minimum 6-inch clearance from floors for all storage.
+
+Section 5: Cross-Contamination Prevention
+
+Separate cutting boards and utensils must be used for raw proteins, produce, and ready-to-eat items. Color-coded equipment is provided: red for raw meat, green for produce, blue for seafood, and white for ready-to-eat items.
+
+Never store raw proteins above ready-to-eat items. Clean and sanitize all food contact surfaces between uses with approved sanitizing solution at 200ppm concentration. Replace sanitizer solution every 2 hours or when visibly soiled.
+
+Section 6: Cleaning and Sanitization Schedule
+
+Daily cleaning tasks include all food contact surfaces, floors, equipment exteriors, and restrooms. Weekly deep cleaning covers behind and under equipment, ventilation hoods, and walk-in cooler floors. Monthly cleaning includes ceiling tiles, light fixtures, and exterior areas.
+
+Use only approved cleaning chemicals from the designated supply list. Follow manufacturer dilution ratios exactly. Never mix different cleaning products. Store all chemicals in the locked chemical storage area, separated from food products.
+
+Section 7: Pest Control
+
+Report any evidence of pest activity immediately to the shift manager. Do not attempt to apply pesticides or set traps without authorization. The contracted pest control service conducts monthly inspections and treatments.
+
+Maintain all exterior doors with self-closing mechanisms and door sweeps. Seal any gaps or cracks in walls, floors, and around utility penetrations. Keep dumpster areas clean and lids closed at all times.
+
+Section 8: Allergen Management
+
+All menu items containing the eight major allergens must be clearly labeled. Staff must be trained to respond to allergen inquiries and know the composition of all menu items.
+
+When preparing allergen-free orders, use dedicated equipment and clean all surfaces thoroughly. Any allergen-related incident must be reported to management immediately and documented in the incident log.
+
+Section 9: Emergency Food Safety Procedures
+
+In the event of a power outage, do not open refrigerator or freezer doors. If power is not restored within 4 hours, begin transferring critical items to backup cold storage. Document all temperature readings during the outage.
+
+Section 10: Training and Certification
+
+All new employees must complete food safety orientation within their first week. Annual recertification is required for all food-handling staff. Training records must be maintained on file for a minimum of 3 years.
+
+Section 11: Record Keeping
+
+Maintain all food safety records for a minimum of 1 year. This includes temperature logs, receiving records, cleaning schedules, pest control reports, and training certificates. Records must be available for inspection at all times.
+
+Section 12: Compliance and Enforcement
+
+Violations of food safety procedures will result in progressive disciplinary action. Critical violations require immediate corrective action. Branches will be audited quarterly on food safety compliance. Scores below 80% will trigger an immediate follow-up audit within 30 days.`,
+        createdAt: new Date('2025-08-10T09:00:00Z'),
+        updatedAt: new Date('2026-03-15T14:30:00Z'),
       },
     }),
     prisma.sopDocument.create({
       data: {
         title: 'Customer Service Protocol',
-        description: 'Standard operating procedures for customer interactions, complaint handling, and service recovery.',
+        description: 'Standard customer service procedures including greeting standards, complaint resolution, escalation paths, and service recovery guidelines.',
         category: 'Operations',
         version: '3.1',
-        content: `# Customer Service Protocol v3.1\n\n## Section 1: Greeting Standards\nEvery customer must be acknowledged within 30 seconds of entry. Use the standard greeting: "Welcome to [Branch Name], how can I help you today?"\n\n## Section 2: Complaint Resolution\nLevel 1: Staff resolves on the spot (refund up to $25). Level 2: Manager intervention (refund up to $100). Level 3: HQ escalation (over $100 or legal implications).\n\n## Section 3: Service Recovery\nAfter any complaint, offer a recovery gesture (discount, complimentary item). Log all complaints in the issue tracking system within 24 hours.`,
         status: 'CURRENT',
         sections: 8,
-        createdById: users[0].id,
+        createdById: sandra.id,
+        content: `Section 1: Service Philosophy
+
+Xyloquent Corp is committed to delivering an exceptional customer experience at every touchpoint. Our service philosophy centers on three core principles: Warmth, Efficiency, and Resolution. Every interaction should leave customers feeling valued and satisfied.
+
+Section 2: Greeting and Engagement Standards
+
+Every customer must be acknowledged within 10 seconds of entering the branch. The standard greeting is warm, natural, and includes eye contact. Staff should use the customer's name when known.
+
+During peak hours, a queue acknowledgment is acceptable when immediate personal attention is not possible. Never let a customer feel ignored. If hands are occupied, a smile and nod convey attention.
+
+Section 3: Service Timing Standards
+
+Counter service transactions should be completed within 3 minutes. Consultation-based interactions should not exceed 10 minutes without a status update to the customer. Phone calls must be answered within 3 rings during business hours.
+
+Wait times exceeding 5 minutes require a proactive update from staff. If wait times exceed 10 minutes, offer a complimentary item or service recovery gesture as appropriate.
+
+Section 4: Complaint Handling (HEART Method)
+
+Follow the HEART method for all customer complaints:
+H - Hear the customer out completely without interruption
+E - Empathize with their situation
+A - Apologize sincerely, taking ownership regardless of fault
+R - Resolve the issue with a concrete solution within your authority
+T - Thank the customer for bringing the issue to your attention
+
+Document all complaints in the customer feedback system within 1 hour of resolution.
+
+Section 5: Escalation Matrix
+
+Level 1 (Staff): Product quality issues, simple refund requests, information inquiries. Resolution authority up to $25 in service recovery.
+Level 2 (Shift Supervisor): Repeated complaints, complex refund requests, staffing-related issues. Resolution authority up to $75.
+Level 3 (Branch Manager): Safety concerns, discrimination complaints, legal threats, social media incidents. Resolution authority up to $250.
+Level 4 (Regional/HQ): Any incident involving injury, media attention, or potential legal liability. Immediate escalation required.
+
+Section 6: Phone and Digital Communication
+
+Answer all calls with the standard greeting. Never place a caller on hold for more than 60 seconds without checking back. Respond to all email inquiries within 24 business hours. Social media mentions must be flagged to management.
+
+Section 7: Accessibility and Inclusion
+
+Provide assistance to customers with disabilities proactively but respectfully. Service animals are always welcome. Maintain accessible pathways and ensure ADA compliance in all service areas. Language assistance resources are available through the company language line.
+
+Section 8: Service Recovery and Follow-Up
+
+For any significant service failure, follow up with the customer within 48 hours by phone or email. Offer a tangible gesture of goodwill proportional to the inconvenience. Track all service recovery actions in the BranchPulse system.`,
+        createdAt: new Date('2025-06-15T10:00:00Z'),
+        updatedAt: new Date('2026-02-28T11:00:00Z'),
       },
     }),
     prisma.sopDocument.create({
       data: {
         title: 'Inventory Management Guide',
-        description: 'Procedures for stock counting, reordering, waste tracking, and supplier management.',
+        description: 'Complete guide to inventory management including ordering, receiving, storage, rotation, counting procedures, and waste tracking.',
         category: 'Inventory',
         version: '2.5',
-        content: `# Inventory Management Guide v2.5\n\n## Section 1: Daily Stock Counts\nCritical items (perishables, high-value) counted daily. Full inventory count weekly on Sundays.\n\n## Section 2: Reorder Points\nAutomatic reorder triggered when stock falls below minimum level. Branch managers review and approve all orders over $500.\n\n## Section 3: Waste Tracking\nAll waste must be logged with reason codes. Monthly waste reports submitted to area manager. Target: less than 2% waste rate.`,
         status: 'CURRENT',
         sections: 15,
-        createdById: users[0].id,
+        createdById: sandra.id,
+        content: `Section 1: Overview
+
+This SOP governs all inventory management activities across Xyloquent Corp branches. Proper inventory management ensures product availability, minimizes waste, controls costs, and supports accurate financial reporting.
+
+Section 2: Inventory Classification
+
+Products are classified into three tiers based on value and velocity:
+Tier A: High-value or high-velocity items requiring daily monitoring
+Tier B: Medium-value items requiring weekly monitoring
+Tier C: Low-value or slow-moving items requiring monthly monitoring
+
+Section 3: Par Level Management
+
+Par levels (minimum stock quantities) are established for all Tier A and Tier B items. Par levels are reviewed and adjusted quarterly based on sales trends, seasonality, and promotional calendars. When stock falls below par level, an automatic reorder notification is generated in BranchPulse.
+
+Section 4: Ordering Procedures
+
+Standard orders must be placed by 2:00 PM local time for next-day delivery. Emergency orders incur a 15% surcharge and should only be placed for critical stock-outs. All orders must be placed through the BranchPulse procurement module.
+
+Section 5: Receiving Procedures
+
+All deliveries must be inspected by a trained receiver. Check delivery against the purchase order for accuracy in items, quantities, and pricing. Temperature-sensitive items must be checked with a calibrated probe thermometer. Move perishable items to appropriate storage within 15 minutes of acceptance.
+
+Section 6: Storage Requirements
+
+Maintain organized storage areas with clear labeling and adequate lighting. Store items at least 6 inches off the floor. Follow strict temperature zones: Dry storage 50-70F, Refrigerated 35-40F, Frozen 0F or below.
+
+Section 7: FIFO Rotation
+
+All inventory must be rotated using the First In, First Out method. New stock goes behind or below existing stock. Date labels must be applied to all items at time of receiving. Conduct FIFO spot checks daily during the morning shift.
+
+Section 8: Cycle Counting
+
+Tier A items: counted daily. Tier B items: counted weekly (every Monday). Tier C items: counted monthly (first business day of month). All counts must be entered into BranchPulse by end of the counting day. Variances exceeding 3% must be investigated.
+
+Section 9: Full Physical Inventory
+
+Conduct a full physical inventory on the last business day of each quarter. All staff participate in the count. Two-person count teams are required for accuracy. Blind counts are mandatory.
+
+Section 10: Waste Tracking
+
+All waste must be recorded in the waste log with reason codes: Expired, Damaged, Preparation Waste, Customer Return, or Theft/Shrinkage. Weekly waste reports are generated automatically. Branches exceeding the waste threshold (2% of sales) receive a waste reduction action plan.
+
+Section 11: Returns and Credits
+
+Initiate vendor returns within 48 hours of identifying non-conforming product. Photograph all items being returned. File credit requests in the procurement module.
+
+Section 12: Inventory Adjustments
+
+All inventory adjustments must be approved by the branch manager. Adjustments exceeding $500 require area manager approval. Document the reason for every adjustment.
+
+Section 13: Seasonal and Promotional Inventory
+
+Seasonal inventory must be ordered according to the promotional calendar distributed by HQ. Pre-orders close 30 days before promotion start date. Post-promotion inventory must be assessed within 3 days.
+
+Section 14: Vendor Management
+
+Maintain relationships with approved vendors only. Report any vendor performance issues through the vendor scorecard system. Vendor reviews are conducted quarterly.
+
+Section 15: System and Technology
+
+BranchPulse is the system of record for all inventory data. Manual workarounds are permitted only during system outages and must be reconciled within 24 hours of system restoration.`,
+        createdAt: new Date('2025-09-01T08:00:00Z'),
+        updatedAt: new Date('2026-01-20T16:00:00Z'),
       },
     }),
     prisma.sopDocument.create({
       data: {
         title: 'Emergency Response Procedures',
-        description: 'Protocols for fire, medical emergencies, security threats, and natural disasters.',
+        description: 'Emergency response protocols covering fire, medical, severe weather, active threat, power outage, and building evacuation procedures.',
         category: 'Safety',
         version: '5.0',
-        content: `# Emergency Response Procedures v5.0\n\n## Section 1: Fire Emergency\nActivate alarm, evacuate via nearest exit, call emergency services, account for all staff at assembly point.\n\n## Section 2: Medical Emergency\nCall emergency services, administer first aid if trained, do not move injured person unless in danger.\n\n## Section 3: Security Threat\nDo not confront. Activate silent alarm. Follow lockdown procedure. Cooperate with authorities.`,
         status: 'CURRENT',
         sections: 6,
-        createdById: users[0].id,
+        createdById: sandra.id,
+        content: `Section 1: General Emergency Principles
+
+In any emergency, prioritize human safety above all else. Property and inventory are replaceable; people are not. All staff must know the location of emergency exits, fire extinguishers, first aid kits, and the emergency assembly point.
+
+The designated Emergency Coordinator for each shift is the senior manager on duty. In their absence, the most senior staff member assumes the role.
+
+Section 2: Fire Emergency
+
+Upon discovering a fire or smoke: activate the nearest fire alarm pull station, call 911 immediately. If the fire is small and you have been trained, attempt to extinguish using the nearest fire extinguisher (PASS technique: Pull, Aim, Squeeze, Sweep). If the fire cannot be controlled immediately, evacuate using the nearest safe exit. Do not use elevators. Close doors behind you. Proceed to the assembly point. Account for all staff and customers.
+
+Do not re-enter the building until cleared by fire officials.
+
+Section 3: Medical Emergency
+
+For any medical emergency: assess the scene for safety, call 911 for any life-threatening condition, administer first aid within your training level. AED devices are located at the main entrance and break room. Do not move an injured person unless in immediate danger. Designate someone to meet paramedics.
+
+Report all medical incidents to the branch manager within 1 hour. Complete an incident report in BranchPulse within 24 hours.
+
+Section 4: Severe Weather
+
+When a severe weather warning is issued: monitor local weather alerts, notify all staff and customers. For tornado warnings, move everyone to the interior safe room. For flooding, move to upper floors if applicable. Do not walk or drive through floodwater. Remain sheltered until all-clear is issued.
+
+Section 5: Active Threat / Security Incident
+
+Follow the RUN-HIDE-FIGHT protocol. RUN: If there is a safe escape path, leave immediately. HIDE: If escape is not possible, find a secure hiding place, lock and barricade doors, silence phones. FIGHT: As an absolute last resort only. Report all security incidents to law enforcement and corporate security immediately.
+
+Section 6: Power Outage and Building Systems Failure
+
+During a power outage: remain calm, use flashlights (not candles), emergency lighting should activate automatically. If emergency lighting fails, evacuate. Secure all cash registers. Do not open refrigerators unnecessarily. If power is not restored within 2 hours, begin food safety protocols for temperature-sensitive inventory.
+
+For gas leak: evacuate immediately, do not use electrical devices, call 911 from outside. For water main break: shut off the main water valve if accessible, contact facilities management.`,
+        createdAt: new Date('2025-04-20T07:00:00Z'),
+        updatedAt: new Date('2026-03-01T09:45:00Z'),
       },
     }),
     prisma.sopDocument.create({
       data: {
         title: 'Visual Merchandising Standards',
-        description: 'Guidelines for product displays, signage, and brand presentation across all locations.',
+        description: 'Brand visual standards for in-store displays, signage placement, product presentation, window displays, and seasonal decoration guidelines.',
         category: 'Brand',
         version: '1.8',
-        content: `# Visual Merchandising Standards v1.8\n\n## Section 1: Window Displays\nRefresh every 2 weeks. Follow seasonal campaign guidelines from HQ. Use approved fixtures and lighting.\n\n## Section 2: In-Store Layout\nMaintain clear sight lines. High-margin products at eye level. Impulse items near checkout.`,
         status: 'UNDER_REVIEW',
         sections: 10,
-        createdById: users[0].id,
+        createdById: sandra.id,
+        content: `Section 1: Brand Identity Overview
+
+Visual merchandising at Xyloquent Corp branches must consistently reflect our brand identity: modern, warm, and premium. Every visual element from signage to product display should communicate quality and attention to detail.
+
+Section 2: Window Displays
+
+Window displays are the first impression for walk-in traffic. Refresh window displays according to the seasonal calendar (minimum quarterly). Key principles: clean glass (inside and out, cleaned daily), adequate lighting (spotlights angled at 30 degrees), minimal clutter (rule of three for product groupings), and clear pricing where applicable.
+
+Section 3: Interior Signage Standards
+
+All signage must use approved templates from the marketing portal. Hand-written signs are not permitted in customer-facing areas. Signage must be level, clean, and in good condition. Pricing signs must be accurate and updated within 24 hours of any price change.
+
+Section 4: Product Display Guidelines
+
+Maintain fully stocked displays during all operating hours. Follow the planogram provided for each product category. Product facing must be done every 2 hours during peak periods and at close of each shift. Remove any damaged or soiled packaging from the sales floor immediately.
+
+Section 5: Lighting Standards
+
+Maintain all lighting fixtures in working order. Replace burned-out bulbs within 24 hours. Ambient lighting levels should be maintained at 50-75 foot-candles in retail areas and 30-50 foot-candles in seating areas. Lighting should be warm white (2700K-3000K).
+
+Section 6: Cleanliness and Presentation
+
+The sales floor, fixtures, and displays must be spotless at all times. Dust and wipe all display surfaces daily. Vacuum or mop floors every 2 hours during operating hours. Remove clutter, personal items, and non-approved materials from customer-visible areas.
+
+Section 7: Seasonal and Promotional Displays
+
+Follow the promotional display guide for each campaign. Install promotional materials according to the planogram and timeline provided. Photograph completed installations and upload to BranchPulse for verification. Use only approved decoration items.
+
+Section 8: Digital Displays and Menu Boards
+
+Ensure all digital displays are powered on and showing current content during operating hours. Report any malfunctions to IT support immediately. Menu boards must reflect current offerings and pricing.
+
+Section 9: Exterior and Curb Appeal
+
+Maintain clean and inviting exterior areas. Sweep entrance and sidewalk areas twice daily. Keep trash receptacles emptied. Exterior signage must be illuminated during all dark hours. Seasonal banners and flags must be installed according to the marketing calendar.
+
+Section 10: Visual Audit and Compliance
+
+Branch managers must conduct a daily visual walk-through using the Visual Standards Checklist in BranchPulse. Mystery shopper evaluations include visual merchandising scoring. Branches scoring below 80% on visual standards will receive a corrective action plan.`,
+        createdAt: new Date('2025-11-05T11:00:00Z'),
+        updatedAt: new Date('2025-12-10T15:30:00Z'),
       },
     }),
     prisma.sopDocument.create({
       data: {
         title: 'Cash Handling & POS Operations',
-        description: 'Procedures for cash management, POS system usage, end-of-day reconciliation, and fraud prevention.',
+        description: 'Procedures for cash handling, point-of-sale operations, daily reconciliation, deposit procedures, and loss prevention measures.',
         category: 'Finance',
         version: '3.3',
-        content: `# Cash Handling & POS Operations v3.3\n\n## Section 1: Opening Procedures\nCount float, verify against previous close. Log opening amount in POS system.\n\n## Section 2: Transaction Processing\nAll sales must be processed through POS. No off-system transactions. Void/refund requires manager PIN.\n\n## Section 3: End of Day\nCount all tills, reconcile against POS totals. Discrepancies over $5 must be reported to area manager.`,
         status: 'CURRENT',
         sections: 9,
-        createdById: users[0].id,
+        createdById: sandra.id,
+        content: `Section 1: Purpose
+
+This SOP establishes the procedures for all cash handling and point-of-sale operations at Xyloquent Corp branches. Strict adherence protects the company, employees, and customers from financial loss and fraud.
+
+Section 2: Cash Register Operations
+
+Each cash register must be assigned to a single operator per shift. Register assignment is logged in the POS system at the start of each shift. Do not share register access codes. Begin each shift with a verified starting bank amount ($200 standard). Count the bank in the presence of a witness and sign the count sheet.
+
+Keep the register drawer closed when not actively making change. Do not leave a register unattended with the drawer open.
+
+Section 3: Transaction Processing
+
+Process all transactions through the POS system. No off-system transactions are permitted. For cash transactions: announce the amount received, place the bill on the register ledge until change is made, count change back to the customer, then place the bill in the drawer.
+
+Void transactions require supervisor authorization. Refunds require branch manager approval for amounts over $50. All refunds must be processed to the original payment method when possible.
+
+Section 4: Safe Management
+
+The branch safe is accessible only to the branch manager and designated key holders. Safe combinations must be changed every 90 days. Cash in the register should not exceed $500 at any time. Perform safe drops whenever the register exceeds $300 in accumulated cash.
+
+Section 5: Daily Reconciliation
+
+At the end of each shift, each register operator must count their drawer and complete a shift report. The count must match the POS system total within a $2 variance. The closing manager reconciles all registers, safe contents, and POS reports before leaving. The daily reconciliation report must be submitted in BranchPulse by midnight.
+
+Over/short patterns are monitored by loss prevention. Three instances of shortages exceeding $5 in a 30-day period will trigger a formal investigation.
+
+Section 6: Bank Deposit Procedures
+
+Prepare bank deposits daily. Count all cash with a witness. Seal the deposit in a tamper-evident bank bag. Deposits must be transported using the approved armored carrier service or by the branch manager using a varied schedule. Verify deposit receipt within 48 hours.
+
+Section 7: Gift Card and Stored Value
+
+Activate gift cards only at the time of purchase. Do not pre-activate cards. Report any suspicious gift card activity (bulk purchases, requests for specific card numbers) to loss prevention immediately.
+
+Section 8: Loss Prevention Measures
+
+Security cameras cover all register areas and the safe. Do not obstruct camera views. Never count cash in view of customers. Perform all cash counts in the back office. Employee purchases must be processed by another team member, never self-processed.
+
+Section 9: POS System Administration
+
+POS system access is role-based: cashiers have transaction access only, supervisors have void and discount authority, managers have full administrative access. Report any POS malfunctions to IT support immediately. System updates are deployed overnight; verify POS functionality at the start of each business day.`,
+        createdAt: new Date('2025-07-22T13:00:00Z'),
+        updatedAt: new Date('2026-03-22T10:00:00Z'),
       },
     }),
   ]);
-  console.log(`Created ${sopDocs.length} SOP documents`);
+  console.log(`Created ${sopDocuments.length} SOP documents`);
 
-  console.log(`  SOPs:         ${sopDocs.length}`);
+  // ---------------------------------------------------------------------------
+  // Summary
+  // ---------------------------------------------------------------------------
+  console.log('\nSeed complete! Summary:');
+  console.log('  Organization: 1');
+  console.log('  Regions:      4');
+  console.log('  Areas:        8');
+  console.log(`  Branches:     ${branches.length}`);
+  console.log(`  Users:        ${users.length}`);
+  console.log('  Templates:    3');
+  console.log(`  Audits:       ${audits.length}`);
+  console.log(`  Issues:       ${issues.length}`);
+  console.log(`  Escalations:  ${escalations.length}`);
+  console.log(`  Promo Checks: ${promoChecks.length}`);
+  console.log(`  Stock Reqs:   ${stockRequests.length}`);
+  console.log(`  Notifications:${notifications.length}`);
+  console.log(`  Audit Logs:   ${auditLogs.length}`);
+  console.log(`  SOP Docs:     ${sopDocuments.length}`);
 }
 
 main()

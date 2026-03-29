@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { getDataScope } from '@/lib/data-scope';
 import { checkPermission } from '@/lib/rbac';
+import { logAction } from '@/lib/audit-log';
+import { createNotification } from '@/lib/notify';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -164,6 +166,31 @@ export async function PATCH(
         },
       },
     });
+
+    // Fire-and-forget: audit log
+    const oldStatus = existing.status;
+    const newStatus = status ?? oldStatus;
+    logAction(user.id, 'AUDIT_UPDATED', 'Audit', audit.id, `Status: ${oldStatus} -> ${newStatus}`);
+
+    // Notify auditor when status changes
+    if (status && status !== oldStatus) {
+      createNotification(
+        audit.auditor.id,
+        'Audit Status Changed',
+        `Your audit for ${audit.branch.name} was ${newStatus.toLowerCase()}`,
+        'audit_status'
+      );
+    }
+
+    // Notify reviewer when audit is submitted
+    if (status === 'SUBMITTED' && audit.reviewer) {
+      createNotification(
+        audit.reviewer.id,
+        'Audit Submitted for Review',
+        `An audit for ${audit.branch.name} has been submitted and needs your review`,
+        'audit_submitted'
+      );
+    }
 
     return NextResponse.json(audit);
   } catch (error) {

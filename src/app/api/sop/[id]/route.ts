@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { checkPermission } from '@/lib/rbac';
+import { logAction } from '@/lib/audit-log';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -126,6 +127,9 @@ export async function PATCH(
       },
     });
 
+    // Fire-and-forget: audit log
+    logAction(user.id, 'SOP_UPDATED', 'SopDocument', sop.id, `${sop.title} v${sop.version}`);
+
     return NextResponse.json(sop);
   } catch (error) {
     console.error('Failed to update SOP:', error);
@@ -155,6 +159,9 @@ export async function DELETE(
     }
 
     await prisma.sopDocument.delete({ where: { id } });
+
+    // Fire-and-forget: audit log
+    logAction(user.id, 'SOP_DELETED', 'SopDocument', id, `${existing.title} v${existing.version}`);
 
     return NextResponse.json({ success: true });
   } catch (error) {

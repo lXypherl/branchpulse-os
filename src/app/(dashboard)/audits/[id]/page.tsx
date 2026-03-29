@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import AuditActions from './AuditActions';
 
 export const dynamic = 'force-dynamic';
 
@@ -80,11 +81,6 @@ export default async function AuditDetailPage({
   if (!audit) notFound();
 
   const status = statusConfig[audit.status] ?? statusConfig.DRAFT;
-
-  // Determine available actions based on audit state
-  const canSubmit = audit.status === 'DRAFT' || audit.status === 'RETURNED';
-  const canApprove = audit.status === 'SUBMITTED' || audit.status === 'UNDER_REVIEW';
-  const canReturn = audit.status === 'SUBMITTED' || audit.status === 'UNDER_REVIEW';
 
   return (
     <div className="space-y-8">
@@ -344,38 +340,7 @@ export default async function AuditDetailPage({
           </div>
 
           {/* Action Buttons */}
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 shadow-sm p-6 space-y-3">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-              Actions
-            </h2>
-
-            {canSubmit && (
-              <button className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-br from-[#0058bc] to-[#0070eb] text-sm font-semibold text-white shadow-md hover:shadow-lg transition-shadow">
-                <span className="material-symbols-outlined text-[16px]">send</span>
-                Submit for Review
-              </button>
-            )}
-
-            {canApprove && (
-              <button className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-on-background text-sm font-semibold text-white hover:bg-slate-800 transition-colors">
-                <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                Approve Audit
-              </button>
-            )}
-
-            {canReturn && (
-              <button className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white text-sm font-semibold text-on-background border border-outline-variant/40 hover:bg-surface-container-low transition-colors">
-                <span className="material-symbols-outlined text-[16px]">undo</span>
-                Return for Revision
-              </button>
-            )}
-
-            {!canSubmit && !canApprove && !canReturn && (
-              <p className="text-xs text-on-surface-variant text-center py-2">
-                No actions available for this audit status.
-              </p>
-            )}
-          </div>
+          <AuditActions auditId={audit.id} currentStatus={audit.status} />
         </div>
       </div>
     </div>

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { checkPermission } from '@/lib/rbac';
+import { logAction } from '@/lib/audit-log';
+import { createNotification } from '@/lib/notify';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -113,6 +115,21 @@ export async function PATCH(
         },
       },
     });
+
+    // Fire-and-forget: audit log
+    const oldStatus = existing.status;
+    const newStatus = status ?? oldStatus;
+    logAction(user.id, 'STOCK_REQUEST_UPDATED', 'StockRequest', stockRequest.id, `Status: ${oldStatus} -> ${newStatus}`);
+
+    // Notify requester on approval/rejection
+    if (status && (status === 'APPROVED' || status === 'REJECTED')) {
+      createNotification(
+        existing.requestedById,
+        'Stock Request ' + (status === 'APPROVED' ? 'Approved' : 'Rejected'),
+        `Your stock request for ${stockRequest.branch.name} has been ${status.toLowerCase()}`,
+        'stock_request_status'
+      );
+    }
 
     return NextResponse.json(stockRequest);
   } catch (error) {
