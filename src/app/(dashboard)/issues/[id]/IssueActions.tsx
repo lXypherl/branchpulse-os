@@ -31,6 +31,8 @@ export default function IssueActions({ issueId, currentStatus, hasCorrectiveActi
   const [correctiveAction, setCorrectiveAction] = useState(initialCorrectiveAction);
   const [savingEvidence, setSavingEvidence] = useState(false);
   const [savingCorrective, setSavingCorrective] = useState(false);
+  const [draftingAction, setDraftingAction] = useState(false);
+  const [draftSource, setDraftSource] = useState<string | null>(null);
 
   const status = currentStatus as IssueStatus;
 
@@ -228,10 +230,59 @@ export default function IssueActions({ issueId, currentStatus, hasCorrectiveActi
           <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-2">
             Corrective Action
           </h2>
+
+          {/* Draft Action Plan AI Button */}
+          <button
+            disabled={draftingAction}
+            onClick={async () => {
+              setDraftingAction(true);
+              setDraftSource(null);
+              try {
+                const res = await fetch(`/api/issues/${issueId}/draft-action`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                });
+                if (res.ok) {
+                  const data = await res.json();
+                  setCorrectiveAction(data.draft);
+                  setDraftSource(data.source);
+                } else {
+                  const data = await res.json();
+                  setError(data.error ?? 'Failed to generate draft');
+                }
+              } catch {
+                setError('Network error generating draft.');
+              } finally {
+                setDraftingAction(false);
+              }
+            }}
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-br from-indigo-600 to-indigo-500 text-white shadow-sm hover:shadow-md transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {draftingAction ? (
+              <span className="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>
+            ) : (
+              <span className="material-symbols-outlined text-[14px]">auto_awesome</span>
+            )}
+            {draftingAction ? 'Drafting...' : 'Draft Action Plan with AI'}
+          </button>
+
+          {draftSource && (
+            <div className="flex items-center justify-end">
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                draftSource === 'ai' ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-500'
+              }`}>
+                <span className="material-symbols-outlined text-[10px]">
+                  {draftSource === 'ai' ? 'auto_awesome' : 'rule'}
+                </span>
+                {draftSource === 'ai' ? 'AI Generated' : 'Rule-based'}
+              </span>
+            </div>
+          )}
+
           <textarea
-            rows={3}
+            rows={5}
             value={correctiveAction}
-            onChange={(e) => setCorrectiveAction(e.target.value)}
+            onChange={(e) => { setCorrectiveAction(e.target.value); setDraftSource(null); }}
             placeholder="Describe the corrective action taken..."
             className="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none placeholder:text-outline"
           />

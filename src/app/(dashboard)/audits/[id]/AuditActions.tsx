@@ -44,6 +44,9 @@ export default function AuditActions({ auditId, currentStatus }: AuditActionsPro
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [summarySource, setSummarySource] = useState<string | null>(null);
+  const [summarizing, setSummarizing] = useState(false);
 
   const status = currentStatus as AuditStatus;
   const actions = TRANSITIONS[status] ?? [];
@@ -107,6 +110,65 @@ export default function AuditActions({ auditId, currentStatus }: AuditActionsPro
 
       {error && (
         <p className="text-xs text-tertiary text-center mt-2">{error}</p>
+      )}
+
+      {/* Generate AI Summary - visible for SUBMITTED and later statuses */}
+      {status !== 'DRAFT' && (
+        <>
+          <button
+            disabled={summarizing}
+            onClick={async () => {
+              setSummarizing(true);
+              setAiSummary(null);
+              setSummarySource(null);
+              try {
+                const res = await fetch(`/api/audits/${auditId}/summarize`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                });
+                if (res.ok) {
+                  const data = await res.json();
+                  setAiSummary(data.summary);
+                  setSummarySource(data.source);
+                  router.refresh();
+                } else {
+                  const data = await res.json();
+                  setError(data.error ?? 'Failed to generate summary');
+                }
+              } catch {
+                setError('Network error generating summary.');
+              } finally {
+                setSummarizing(false);
+              }
+            }}
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-br from-indigo-600 to-indigo-500 text-white shadow-md hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {summarizing ? (
+              <span className="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+            ) : (
+              <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
+            )}
+            {summarizing ? 'Generating...' : 'Generate AI Summary'}
+          </button>
+
+          {aiSummary && (
+            <div className="mt-2 rounded-xl bg-indigo-50 border border-indigo-100 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600">
+                  AI Summary
+                </span>
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                  summarySource === 'ai' ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-600'
+                }`}>
+                  {summarySource === 'ai' ? 'AI' : 'Rules'}
+                </span>
+              </div>
+              <p className="text-xs leading-relaxed text-slate-700 whitespace-pre-wrap">
+                {aiSummary}
+              </p>
+            </div>
+          )}
+        </>
       )}
 
       {/* Create Issue from Audit link */}

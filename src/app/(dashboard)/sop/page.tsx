@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
+import SopQAWidget from '@/components/sop/SopQAWidget';
 
 export const dynamic = 'force-dynamic';
 
@@ -155,47 +156,7 @@ export default async function SOPLibraryPage({
       {/* ------------------------------------------------------------------ */}
       {/*  AI Q&A WIDGET                                                     */}
       {/* ------------------------------------------------------------------ */}
-      <div className="bg-gradient-to-br from-indigo-950 to-slate-900 p-8 rounded-[32px] text-white shadow-2xl relative overflow-hidden mb-10">
-        <div className="absolute -top-12 -right-12 w-40 h-40 bg-primary rounded-full blur-[60px] opacity-20" />
-        <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md">
-                <span className="material-symbols-outlined text-[18px] text-primary-fixed-dim">
-                  auto_awesome
-                </span>
-              </div>
-              <span className="text-xs font-black uppercase tracking-[0.2em] text-primary-fixed-dim">
-                SOP AI Assistant
-              </span>
-            </div>
-            <p className="text-lg font-medium text-slate-300">
-              Ask questions about any SOP document. Answers are grounded exclusively on governed
-              source content.
-            </p>
-          </div>
-          <div className="flex-1 w-full">
-            <form action="/sop" method="GET">
-              <div className="bg-white/10 rounded-xl border border-white/10 p-4 flex items-center gap-3">
-                <span className="material-symbols-outlined text-slate-400">search</span>
-                <input
-                  type="text"
-                  name="search"
-                  defaultValue={searchQuery}
-                  placeholder="Ask a question about SOPs..."
-                  className="flex-1 bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none"
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-semibold text-white transition-colors"
-                >
-                  Search
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+      <SopQAWidget />
 
       {/* ------------------------------------------------------------------ */}
       {/*  CATEGORY FILTER CHIPS                                             */}
