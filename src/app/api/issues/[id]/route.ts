@@ -1,0 +1,159 @@
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(
+  _request: NextRequest,
+  context: RouteContext
+) {
+  try {
+    const { id } = await context.params;
+
+    const issue = await prisma.issue.findUnique({
+      where: { id },
+      include: {
+        branch: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+            address: true,
+            status: true,
+          },
+        },
+        reportedBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            avatarUrl: true,
+          },
+        },
+        assignedTo: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            avatarUrl: true,
+          },
+        },
+        audit: {
+          include: {
+            template: { select: { id: true, name: true, category: true } },
+            auditor: { select: { id: true, name: true } },
+          },
+        },
+        escalations: {
+          include: {
+            escalatedTo: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+              },
+            },
+          },
+          orderBy: { triggeredAt: 'desc' },
+        },
+      },
+    });
+
+    if (!issue) {
+      return NextResponse.json(
+        { error: 'Issue not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(issue);
+  } catch (error) {
+    console.error('Failed to fetch issue:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch issue' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(
+  request: NextRequest,
+  context: RouteContext
+) {
+  try {
+    const { id } = await context.params;
+    const body = await request.json();
+
+    const existing = await prisma.issue.findUnique({ where: { id } });
+    if (!existing) {
+      return NextResponse.json(
+        { error: 'Issue not found' },
+        { status: 404 }
+      );
+    }
+
+    const {
+      title,
+      description,
+      status,
+      severity,
+      assignedToId,
+      correctiveAction,
+      category,
+      dueDate,
+      evidenceUrls,
+    } = body as {
+      title?: string;
+      description?: string;
+      status?: string;
+      severity?: string;
+      assignedToId?: string | null;
+      correctiveAction?: string;
+      category?: string;
+      dueDate?: string | null;
+      evidenceUrls?: string[];
+    };
+
+    const data: Record<string, unknown> = {};
+
+    if (title !== undefined) data.title = title;
+    if (description !== undefined) data.description = description;
+    if (status !== undefined) data.status = status;
+    if (severity !== undefined) data.severity = severity;
+    if (assignedToId !== undefined) data.assignedToId = assignedToId;
+    if (correctiveAction !== undefined) data.correctiveAction = correctiveAction;
+    if (category !== undefined) data.category = category;
+    if (dueDate !== undefined) {
+      data.dueDate = dueDate ? new Date(dueDate) : null;
+    }
+    if (evidenceUrls !== undefined) data.evidenceUrls = evidenceUrls;
+
+    const issue = await prisma.issue.update({
+      where: { id },
+      data,
+      include: {
+        branch: { select: { id: true, name: true, code: true } },
+        reportedBy: { select: { id: true, name: true, email: true } },
+        assignedTo: { select: { id: true, name: true, email: true } },
+        audit: { select: { id: true, score: true, status: true } },
+        escalations: {
+          include: {
+            escalatedTo: { select: { id: true, name: true, email: true } },
+          },
+          orderBy: { triggeredAt: 'desc' },
+        },
+      },
+    });
+
+    return NextResponse.json(issue);
+  } catch (error) {
+    console.error('Failed to update issue:', error);
+    return NextResponse.json(
+      { error: 'Failed to update issue' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,0 +1,340 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum BranchStatus {
+  ACTIVE
+  MAINTENANCE
+  INACTIVE
+}
+
+enum UserRole {
+  HQ_DIRECTOR
+  FRANCHISE_MANAGER
+  REGIONAL_MANAGER
+  AREA_MANAGER
+  BRANCH_MANAGER
+  FIELD_AUDITOR
+  EXECUTIVE_VIEWER
+}
+
+enum AuditStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  RETURNED
+  CLOSED
+}
+
+enum IssueSeverity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum IssueStatus {
+  OPEN
+  IN_PROGRESS
+  UNDER_REVIEW
+  RESOLVED
+  CLOSED
+}
+
+enum PromoCheckStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+
+enum StockRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  FULFILLED
+}
+
+// ---------------------------------------------------------------------------
+// Organization hierarchy
+// ---------------------------------------------------------------------------
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  regions Region[]
+
+  @@index([name])
+}
+
+model Region {
+  id             String       @id @default(cuid())
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  areas Area[]
+
+  @@index([organizationId])
+  @@index([name])
+}
+
+model Area {
+  id       String @id @default(cuid())
+  name     String
+  regionId String
+  region   Region @relation(fields: [regionId], references: [id])
+
+  branches Branch[]
+
+  @@index([regionId])
+  @@index([name])
+}
+
+model Branch {
+  id              String       @id @default(cuid())
+  name            String
+  code            String       @unique
+  address         String
+  status          BranchStatus @default(ACTIVE)
+  managerId       String?
+  areaId          String
+  complianceScore Float        @default(0)
+  lastAuditDate   DateTime?
+  operatingHours  String?
+  createdAt       DateTime     @default(now())
+
+  area    Area  @relation(fields: [areaId], references: [id])
+  manager User? @relation("BranchManager", fields: [managerId], references: [id])
+
+  audits        Audit[]
+  issues        Issue[]
+  promoChecks   PromoCheck[]
+  stockRequests StockRequest[]
+
+  @@index([areaId])
+  @@index([managerId])
+  @@index([status])
+  @@index([complianceScore])
+  @@index([code])
+}
+
+// ---------------------------------------------------------------------------
+// Users
+// ---------------------------------------------------------------------------
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  role      UserRole
+  avatarUrl String?
+
+  managedBranches    Branch[]       @relation("BranchManager")
+  conductedAudits    Audit[]        @relation("Auditor")
+  reviewedAudits     Audit[]        @relation("Reviewer")
+  reportedIssues     Issue[]        @relation("Reporter")
+  assignedIssues     Issue[]        @relation("Assignee")
+  escalationsReceived Escalation[]  @relation("EscalatedTo")
+  stockRequests      StockRequest[] @relation("Requester")
+  notifications      Notification[]
+  auditLogs          AuditLog[]
+
+  @@index([email])
+  @@index([role])
+}
+
+// ---------------------------------------------------------------------------
+// Audits
+// ---------------------------------------------------------------------------
+
+model AuditTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  category    String
+  createdAt   DateTime @default(now())
+
+  audits Audit[]
+
+  @@index([category])
+}
+
+model Audit {
+  id           String      @id @default(cuid())
+  branchId     String
+  templateId   String
+  auditorId    String
+  status       AuditStatus @default(DRAFT)
+  score        Float?
+  findings     String?
+  evidenceUrls String[]
+  submittedAt  DateTime?
+  reviewedAt   DateTime?
+  reviewerId   String?
+  createdAt    DateTime    @default(now())
+
+  branch   Branch        @relation(fields: [branchId], references: [id])
+  template AuditTemplate @relation(fields: [templateId], references: [id])
+  auditor  User          @relation("Auditor", fields: [auditorId], references: [id])
+  reviewer User?         @relation("Reviewer", fields: [reviewerId], references: [id])
+
+  issues Issue[]
+
+  @@index([branchId])
+  @@index([templateId])
+  @@index([auditorId])
+  @@index([reviewerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Issues & escalations
+// ---------------------------------------------------------------------------
+
+model Issue {
+  id              String        @id @default(cuid())
+  title           String
+  description     String
+  branchId        String
+  reportedById    String
+  assignedToId    String?
+  severity        IssueSeverity
+  status          IssueStatus   @default(OPEN)
+  category        String
+  dueDate         DateTime?
+  evidenceUrls    String[]
+  correctiveAction String?
+  auditId         String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  branch     Branch @relation(fields: [branchId], references: [id])
+  reportedBy User   @relation("Reporter", fields: [reportedById], references: [id])
+  assignedTo User?  @relation("Assignee", fields: [assignedToId], references: [id])
+  audit      Audit? @relation(fields: [auditId], references: [id])
+
+  escalations Escalation[]
+
+  @@index([branchId])
+  @@index([reportedById])
+  @@index([assignedToId])
+  @@index([severity])
+  @@index([status])
+  @@index([auditId])
+  @@index([createdAt])
+}
+
+model Escalation {
+  id           String    @id @default(cuid())
+  issueId      String
+  level        Int
+  escalatedToId String
+  reason       String
+  triggeredAt  DateTime  @default(now())
+  resolvedAt   DateTime?
+
+  issue       Issue @relation(fields: [issueId], references: [id])
+  escalatedTo User  @relation("EscalatedTo", fields: [escalatedToId], references: [id])
+
+  @@index([issueId])
+  @@index([escalatedToId])
+  @@index([level])
+}
+
+// ---------------------------------------------------------------------------
+// Promo checks
+// ---------------------------------------------------------------------------
+
+model PromoCheck {
+  id             String           @id @default(cuid())
+  name           String
+  description    String?
+  branchId       String
+  status         PromoCheckStatus @default(PENDING)
+  checklistItems Json
+  dueDate        DateTime?
+  completedAt    DateTime?
+
+  branch Branch @relation(fields: [branchId], references: [id])
+
+  @@index([branchId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+// ---------------------------------------------------------------------------
+// Stock requests
+// ---------------------------------------------------------------------------
+
+model StockRequest {
+  id            String             @id @default(cuid())
+  branchId      String
+  requestedById String
+  items         Json
+  status        StockRequestStatus @default(PENDING)
+  notes         String?
+  createdAt     DateTime           @default(now())
+
+  branch      Branch @relation(fields: [branchId], references: [id])
+  requestedBy User   @relation("Requester", fields: [requestedById], references: [id])
+
+  @@index([branchId])
+  @@index([requestedById])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Notifications
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  type      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([read])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Audit log (system-level activity tracking)
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  action     String
+  entityType String
+  entityId   String
+  details    String?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([createdAt])
+}
