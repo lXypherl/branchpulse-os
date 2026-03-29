@@ -64,6 +64,12 @@ enum StockRequestStatus {
   FULFILLED
 }
 
+enum SopStatus {
+  CURRENT
+  UNDER_REVIEW
+  ARCHIVED
+}
+
 // ---------------------------------------------------------------------------
 // Organization hierarchy
 // ---------------------------------------------------------------------------
@@ -161,6 +167,7 @@ model User {
   stockRequests      StockRequest[] @relation("Requester")
   notifications      Notification[]
   auditLogs          AuditLog[]
+  createdSops        SopDocument[]  @relation("SopCreator")
 
   @@index([email])
   @@index([role])
@@ -351,4 +358,28 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([action])
   @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// SOP Library
+// ---------------------------------------------------------------------------
+
+model SopDocument {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  category    String
+  version     String    @default("1.0")
+  content     String    @db.Text
+  status      SopStatus @default(CURRENT)
+  sections    Int       @default(1)
+  createdById String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  createdBy   User      @relation("SopCreator", fields: [createdById], references: [id])
+
+  @@index([category])
+  @@index([status])
+  @@index([createdById])
 }

@@ -1232,6 +1232,87 @@ async function main() {
   console.log(`  Stock Reqs:   ${stockRequests.length}`);
   console.log(`  Notifications:${notifications.length}`);
   console.log(`  Audit Logs:   ${auditLogs.length}`);
+
+  // ---------------------------------------------------------------------------
+  // SOP Documents
+  // ---------------------------------------------------------------------------
+  const sopDocs = await Promise.all([
+    prisma.sopDocument.create({
+      data: {
+        title: 'Food Safety & Hygiene Standards',
+        description: 'Complete food safety protocols for all branch locations including storage, preparation, and serving guidelines.',
+        category: 'Safety',
+        version: '4.2',
+        content: `# Food Safety & Hygiene Standards v4.2\n\n## Section 1: Temperature Control\nAll cold storage units must maintain temperatures between 0-4°C. Temperature logs must be recorded every 2 hours during operating hours.\n\n## Section 2: Personal Hygiene\nAll staff must wash hands before handling food, after breaks, and after handling raw products. Hand sanitizer stations must be available at all prep areas.\n\n## Section 3: Cross-Contamination Prevention\nSeparate cutting boards and utensils must be used for raw and cooked foods. Color-coded equipment: red for raw meat, green for vegetables, blue for fish.\n\n## Section 4: Storage Requirements\nFIFO (First In, First Out) must be followed. All items must be dated and labeled. Raw products stored below cooked products.\n\n## Section 5: Cleaning Schedules\nDaily deep clean of all prep surfaces. Weekly equipment sanitization. Monthly ventilation system cleaning.`,
+        status: 'CURRENT',
+        sections: 12,
+        createdById: users[0].id,
+      },
+    }),
+    prisma.sopDocument.create({
+      data: {
+        title: 'Customer Service Protocol',
+        description: 'Standard operating procedures for customer interactions, complaint handling, and service recovery.',
+        category: 'Operations',
+        version: '3.1',
+        content: `# Customer Service Protocol v3.1\n\n## Section 1: Greeting Standards\nEvery customer must be acknowledged within 30 seconds of entry. Use the standard greeting: "Welcome to [Branch Name], how can I help you today?"\n\n## Section 2: Complaint Resolution\nLevel 1: Staff resolves on the spot (refund up to $25). Level 2: Manager intervention (refund up to $100). Level 3: HQ escalation (over $100 or legal implications).\n\n## Section 3: Service Recovery\nAfter any complaint, offer a recovery gesture (discount, complimentary item). Log all complaints in the issue tracking system within 24 hours.`,
+        status: 'CURRENT',
+        sections: 8,
+        createdById: users[0].id,
+      },
+    }),
+    prisma.sopDocument.create({
+      data: {
+        title: 'Inventory Management Guide',
+        description: 'Procedures for stock counting, reordering, waste tracking, and supplier management.',
+        category: 'Inventory',
+        version: '2.5',
+        content: `# Inventory Management Guide v2.5\n\n## Section 1: Daily Stock Counts\nCritical items (perishables, high-value) counted daily. Full inventory count weekly on Sundays.\n\n## Section 2: Reorder Points\nAutomatic reorder triggered when stock falls below minimum level. Branch managers review and approve all orders over $500.\n\n## Section 3: Waste Tracking\nAll waste must be logged with reason codes. Monthly waste reports submitted to area manager. Target: less than 2% waste rate.`,
+        status: 'CURRENT',
+        sections: 15,
+        createdById: users[0].id,
+      },
+    }),
+    prisma.sopDocument.create({
+      data: {
+        title: 'Emergency Response Procedures',
+        description: 'Protocols for fire, medical emergencies, security threats, and natural disasters.',
+        category: 'Safety',
+        version: '5.0',
+        content: `# Emergency Response Procedures v5.0\n\n## Section 1: Fire Emergency\nActivate alarm, evacuate via nearest exit, call emergency services, account for all staff at assembly point.\n\n## Section 2: Medical Emergency\nCall emergency services, administer first aid if trained, do not move injured person unless in danger.\n\n## Section 3: Security Threat\nDo not confront. Activate silent alarm. Follow lockdown procedure. Cooperate with authorities.`,
+        status: 'CURRENT',
+        sections: 6,
+        createdById: users[0].id,
+      },
+    }),
+    prisma.sopDocument.create({
+      data: {
+        title: 'Visual Merchandising Standards',
+        description: 'Guidelines for product displays, signage, and brand presentation across all locations.',
+        category: 'Brand',
+        version: '1.8',
+        content: `# Visual Merchandising Standards v1.8\n\n## Section 1: Window Displays\nRefresh every 2 weeks. Follow seasonal campaign guidelines from HQ. Use approved fixtures and lighting.\n\n## Section 2: In-Store Layout\nMaintain clear sight lines. High-margin products at eye level. Impulse items near checkout.`,
+        status: 'UNDER_REVIEW',
+        sections: 10,
+        createdById: users[0].id,
+      },
+    }),
+    prisma.sopDocument.create({
+      data: {
+        title: 'Cash Handling & POS Operations',
+        description: 'Procedures for cash management, POS system usage, end-of-day reconciliation, and fraud prevention.',
+        category: 'Finance',
+        version: '3.3',
+        content: `# Cash Handling & POS Operations v3.3\n\n## Section 1: Opening Procedures\nCount float, verify against previous close. Log opening amount in POS system.\n\n## Section 2: Transaction Processing\nAll sales must be processed through POS. No off-system transactions. Void/refund requires manager PIN.\n\n## Section 3: End of Day\nCount all tills, reconcile against POS totals. Discrepancies over $5 must be reported to area manager.`,
+        status: 'CURRENT',
+        sections: 9,
+        createdById: users[0].id,
+      },
+    }),
+  ]);
+  console.log(`Created ${sopDocs.length} SOP documents`);
+
+  console.log(`  SOPs:         ${sopDocs.length}`);
 }
 
 main()

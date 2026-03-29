@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -157,12 +158,13 @@ function AuditListSection({
       </div>
       <div className="space-y-2">
         {audits.map((audit) => (
-          <div
+          <Link
             key={audit.id}
+            href="/audits"
             className="flex items-center gap-4 rounded-lg border border-outline-variant/10 p-3.5 transition-colors hover:bg-surface-container-low"
           >
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-on-surface truncate">
+              <p className="text-sm font-semibold text-on-surface truncate hover:text-primary transition-colors">
                 {audit.template.name}
               </p>
               <p className="text-[11px] text-on-surface-variant">
@@ -180,7 +182,7 @@ function AuditListSection({
             <span className="flex-shrink-0 text-[10px] text-on-surface-variant/60">
               {new Date(audit.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
             </span>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
@@ -403,9 +405,10 @@ export default async function AuditorDashboardPage() {
 
             <div className="space-y-3">
               {data.issues.map((issue) => (
-                <div
+                <Link
                   key={issue.id}
-                  className="rounded-lg border border-outline-variant/10 p-3 transition-colors hover:bg-surface-container-low"
+                  href="/issues"
+                  className="block rounded-lg border border-outline-variant/10 p-3 transition-colors hover:bg-surface-container-low"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded ${severityBadge(issue.severity)}`}>
@@ -413,7 +416,7 @@ export default async function AuditorDashboardPage() {
                         {issue.severity === 'CRITICAL' ? 'warning' : issue.severity === 'HIGH' ? 'error_outline' : 'info'}
                       </span>
                     </span>
-                    <p className="text-xs font-semibold text-on-surface truncate">{issue.title}</p>
+                    <p className="text-xs font-semibold text-on-surface truncate hover:text-primary transition-colors">{issue.title}</p>
                   </div>
                   <p className="text-[10px] text-on-surface-variant ml-7">
                     {issue.branch.code} {issue.branch.name}
@@ -426,7 +429,7 @@ export default async function AuditorDashboardPage() {
                       {issue.status.replace('_', ' ')}
                     </span>
                   </div>
-                </div>
+                </Link>
               ))}
               {data.issues.length === 0 && (
                 <div className="py-6 text-center text-xs text-on-surface-variant">

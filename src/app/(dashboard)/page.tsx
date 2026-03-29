@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -97,7 +98,8 @@ export default async function HQDashboardPage() {
       {/* ================================================================ */}
       <section className="mb-10 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {/* -- Compliance Score ----------------------------------------- */}
-        <div className="relative overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-ambient">
+        <Link href="/branches" className="block">
+        <div className="relative overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-ambient transition-shadow hover:shadow-ambient-lg cursor-pointer">
           <div className="mb-4 flex items-center justify-between">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
               <span className="material-symbols-outlined text-primary" style={{ fontSize: 22 }}>
@@ -122,9 +124,11 @@ export default async function HQDashboardPage() {
             />
           </div>
         </div>
+        </Link>
 
         {/* -- Active Audits ------------------------------------------- */}
-        <div className="relative overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-ambient">
+        <Link href="/audits" className="block">
+        <div className="relative overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-ambient transition-shadow hover:shadow-ambient-lg cursor-pointer">
           <div className="mb-4 flex items-center justify-between">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/10">
               <span className="material-symbols-outlined text-secondary" style={{ fontSize: 22 }}>
@@ -148,9 +152,11 @@ export default async function HQDashboardPage() {
             />
           </div>
         </div>
+        </Link>
 
         {/* -- Open Issues --------------------------------------------- */}
-        <div className="relative overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-ambient">
+        <Link href="/issues" className="block">
+        <div className="relative overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-ambient transition-shadow hover:shadow-ambient-lg cursor-pointer">
           <div className="mb-4 flex items-center justify-between">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-tertiary/10">
               <span className="material-symbols-outlined text-tertiary" style={{ fontSize: 22 }}>
@@ -174,9 +180,11 @@ export default async function HQDashboardPage() {
             />
           </div>
         </div>
+        </Link>
 
         {/* -- Escalated Items ----------------------------------------- */}
-        <div className="relative overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-ambient">
+        <Link href="/issues" className="block">
+        <div className="relative overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-ambient transition-shadow hover:shadow-ambient-lg cursor-pointer">
           {/* Subtle gradient overlay for urgency */}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-tertiary/5 to-transparent" />
           <div className="relative">
@@ -207,6 +215,7 @@ export default async function HQDashboardPage() {
             </div>
           </div>
         </div>
+        </Link>
       </section>
 
       {/* ================================================================ */}
@@ -324,7 +333,11 @@ export default async function HQDashboardPage() {
                     },
                   ] as const).map((row) => (
                     <tr key={row.branch} className="group">
-                      <td className="py-3.5 text-sm font-medium text-on-surface">{row.branch}</td>
+                      <td className="py-3.5 text-sm font-medium text-on-surface">
+                        <Link href="/branches" className="hover:underline hover:text-primary transition-colors">
+                          {row.branch}
+                        </Link>
+                      </td>
                       <td className="py-3.5">
                         <span className={`inline-block rounded-full px-2.5 py-1 text-[11px] font-semibold ${row.typeColor}`}>
                           {row.type}
@@ -333,9 +346,11 @@ export default async function HQDashboardPage() {
                       <td className="py-3.5 text-xs text-on-surface-variant">{row.duration}</td>
                       <td className="py-3.5">
                         {!isReadOnly && (
-                          <button className="rounded-lg bg-primary px-3.5 py-1.5 text-[11px] font-bold text-on-primary shadow-sm transition-shadow hover:shadow-md">
-                            Intervene
-                          </button>
+                          <Link href="/issues">
+                            <button className="rounded-lg bg-primary px-3.5 py-1.5 text-[11px] font-bold text-on-primary shadow-sm transition-shadow hover:shadow-md">
+                              Intervene
+                            </button>
+                          </Link>
                         )}
                       </td>
                     </tr>

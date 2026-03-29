@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -288,9 +289,9 @@ export default async function AuditsPage() {
                       >
                         {/* Branch */}
                         <td className="px-6 py-4">
-                          <p className="text-sm font-semibold text-on-background">
+                          <Link href={`/audits/${audit.id}`} className="text-sm font-semibold text-on-background hover:text-primary hover:underline transition-colors">
                             {audit.branch.name}
-                          </p>
+                          </Link>
                           <p className="text-xs text-slate-400 mt-0.5">
                             Store #{audit.branch.code}, {audit.template.category}
                           </p>

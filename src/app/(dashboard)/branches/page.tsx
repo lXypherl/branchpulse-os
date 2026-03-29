@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -286,7 +287,9 @@ export default async function BranchRegistryPage() {
                             </span>
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-on-surface">{branch.name}</p>
+                            <Link href={`/branches?selected=${branch.id}`} className="text-sm font-bold text-on-surface hover:text-primary hover:underline transition-colors">
+                              {branch.name}
+                            </Link>
                             <p className="text-xs text-on-surface-variant">{branch.address}</p>
                           </div>
                         </div>
@@ -423,9 +426,9 @@ export default async function BranchRegistryPage() {
                 ))}
               </ul>
 
-              <button className="mt-4 w-full rounded-xl border border-outline-variant/40 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/5">
+              <Link href="/issues" className="mt-4 block w-full rounded-xl border border-outline-variant/40 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/5 text-center">
                 View All Tickets
-              </button>
+              </Link>
             </div>
 
             {/* ---------------------------------------------------------- */}

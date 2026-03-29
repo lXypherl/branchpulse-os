@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -314,46 +315,47 @@ export default async function IssuesPage() {
               {issues.map((issue) => {
                 const due = dueLabel(issue.dueDate);
                 return (
-                  <div
-                    key={issue.id}
-                    className={`cursor-pointer rounded-xl border-l-4 bg-surface-container-lowest p-4 shadow-ambient transition hover:translate-x-1 ${severityBorder(issue.severity)}`}
-                  >
-                    {/* Severity + Status */}
-                    <div className="mb-2 flex items-center gap-2">
-                      <span
-                        className={`rounded-md px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide ${severityBadgeCls(issue.severity)}`}
-                      >
-                        {issue.severity}
-                      </span>
-                      <span className="rounded-md bg-surface-container px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">
-                        {issue.status.replace('_', ' ')}
-                      </span>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="text-sm font-semibold leading-snug text-on-surface">
-                      {issue.title}
-                    </h3>
-
-                    {/* Meta */}
-                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-on-surface-variant">
-                      <span className="inline-flex items-center gap-1">
-                        <span className="material-symbols-outlined text-[16px]">location_on</span>
-                        {issue.branchName}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <span className="material-symbols-outlined text-[16px]">history</span>
-                        {relativeTime(issue.createdAt)}
-                      </span>
-                      {due && (
+                  <Link key={issue.id} href={`/issues/${issue.id}`} className="block">
+                    <div
+                      className={`cursor-pointer rounded-xl border-l-4 bg-surface-container-lowest p-4 shadow-ambient transition hover:translate-x-1 ${severityBorder(issue.severity)}`}
+                    >
+                      {/* Severity + Status */}
+                      <div className="mb-2 flex items-center gap-2">
                         <span
-                          className={`font-semibold ${due.urgent ? 'text-tertiary' : 'text-on-surface-variant'}`}
+                          className={`rounded-md px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide ${severityBadgeCls(issue.severity)}`}
                         >
-                          {due.text}
+                          {issue.severity}
                         </span>
-                      )}
+                        <span className="rounded-md bg-surface-container px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">
+                          {issue.status.replace('_', ' ')}
+                        </span>
+                      </div>
+
+                      {/* Title */}
+                      <h3 className="text-sm font-semibold leading-snug text-on-surface">
+                        {issue.title}
+                      </h3>
+
+                      {/* Meta */}
+                      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-on-surface-variant">
+                        <span className="inline-flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[16px]">location_on</span>
+                          {issue.branchName}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[16px]">history</span>
+                          {relativeTime(issue.createdAt)}
+                        </span>
+                        {due && (
+                          <span
+                            className={`font-semibold ${due.urgent ? 'text-tertiary' : 'text-on-surface-variant'}`}
+                          >
+                            {due.text}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>

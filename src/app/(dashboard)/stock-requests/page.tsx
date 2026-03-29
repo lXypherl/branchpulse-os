@@ -1,4 +1,6 @@
 import prisma from '@/lib/prisma';
+import Link from 'next/link';
+import { StockRequestActions } from '@/components/stock-requests/ActionButtons';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,10 +42,13 @@ export default async function StockRequestsPage() {
           <h1 className="text-4xl font-black text-on-surface tracking-tighter mb-2">Stock Requests</h1>
           <p className="text-on-surface-variant font-medium">Branch supply requests, approvals, and fulfillment tracking.</p>
         </div>
-        <button className="px-6 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary font-semibold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
+        <Link
+          href="/stock-requests/new"
+          className="px-6 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary font-semibold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2"
+        >
           <span className="material-symbols-outlined text-[20px]">add</span>
           New Request
-        </button>
+        </Link>
       </header>
 
       <div className="bg-surface-container-lowest rounded-xl shadow-ambient border border-outline-variant/10 overflow-hidden">
@@ -69,14 +74,15 @@ export default async function StockRequestsPage() {
                 </td>
                 <td className="px-6 py-4 text-sm text-on-surface-variant">{req.date}</td>
                 <td className="px-6 py-4">
-                  {req.status === 'PENDING' ? (
-                    <div className="flex gap-2">
-                      <button className="text-secondary text-xs font-bold hover:underline">Approve</button>
-                      <button className="text-tertiary text-xs font-bold hover:underline">Reject</button>
-                    </div>
-                  ) : (
-                    <button className="text-primary text-xs font-bold hover:underline">View Details</button>
-                  )}
+                  <div className="flex items-center gap-3">
+                    <StockRequestActions id={req.id} status={req.status} />
+                    <Link
+                      href={`/stock-requests/${req.id}`}
+                      className="text-primary text-xs font-bold hover:underline"
+                    >
+                      View Details
+                    </Link>
+                  </div>
                 </td>
               </tr>
             ))}

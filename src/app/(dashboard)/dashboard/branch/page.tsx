@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -317,7 +318,9 @@ export default async function BranchDashboardPage() {
                     <tr key={audit.id} className="group">
                       <td className="py-3.5">
                         <div>
-                          <p className="text-sm font-medium text-on-surface">{audit.template.name}</p>
+                          <Link href="/audits" className="text-sm font-medium text-on-surface hover:text-primary hover:underline transition-colors">
+                            {audit.template.name}
+                          </Link>
                           <p className="text-[11px] text-on-surface-variant">{audit.template.category}</p>
                         </div>
                       </td>
@@ -382,7 +385,9 @@ export default async function BranchDashboardPage() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <p className="text-sm font-semibold text-on-surface truncate">{issue.title}</p>
+                      <Link href="/issues" className="text-sm font-semibold text-on-surface truncate hover:text-primary hover:underline transition-colors">
+                        {issue.title}
+                      </Link>
                       <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${severityBadge(issue.severity)}`}>
                         {issue.severity}
                       </span>
@@ -443,7 +448,9 @@ export default async function BranchDashboardPage() {
                       </span>
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs font-semibold text-on-surface truncate">{itemSummary}</p>
+                      <Link href="/stock-requests" className="text-xs font-semibold text-on-surface truncate hover:text-primary hover:underline transition-colors">
+                        {itemSummary}
+                      </Link>
                       <p className="text-[10px] text-on-surface-variant">
                         {sr.requestedBy.name} &bull; {new Date(sr.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </p>
