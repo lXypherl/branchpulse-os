@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 
 const navLinks = [
   { label: 'Dashboard', href: '/' },
@@ -11,11 +12,50 @@ const navLinks = [
   { label: 'Escalations', href: '/escalations' },
 ];
 
-export default function TopNav() {
+const roleLabels: Record<string, string> = {
+  HQ_DIRECTOR: 'HQ Operations Director',
+  FRANCHISE_MANAGER: 'Franchise Operations Manager',
+  REGIONAL_MANAGER: 'Regional Manager',
+  AREA_MANAGER: 'Area Manager',
+  BRANCH_MANAGER: 'Branch Manager',
+  FIELD_AUDITOR: 'Field Auditor',
+  EXECUTIVE_VIEWER: 'Executive Viewer',
+};
+
+const roleSublabels: Record<string, string> = {
+  HQ_DIRECTOR: 'Global Command',
+  FRANCHISE_MANAGER: 'Network Operations',
+  REGIONAL_MANAGER: 'Regional Control',
+  AREA_MANAGER: 'Area Operations',
+  BRANCH_MANAGER: 'Branch Operations',
+  FIELD_AUDITOR: 'Field Operations',
+  EXECUTIVE_VIEWER: 'Executive Access',
+};
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+interface TopNavProps {
+  user: { name: string; role: string; email: string } | null;
+}
+
+export default function TopNav({ user }: TopNavProps) {
   const pathname = usePathname();
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href);
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    window.location.href = '/login';
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl shadow-[0px_12px_32px_rgba(26,27,31,0.06)] border-b border-slate-200/50">
@@ -52,10 +92,10 @@ export default function TopNav() {
           {/* Role Label */}
           <div className="hidden lg:flex flex-col items-end">
             <span className="text-sm font-semibold text-slate-700 leading-tight">
-              HQ Operations Director
+              {user ? roleLabels[user.role] || user.role : 'Not signed in'}
             </span>
             <span className="text-xs text-slate-400 leading-tight">
-              Global Command
+              {user ? roleSublabels[user.role] || 'System Access' : ''}
             </span>
           </div>
 
@@ -75,8 +115,49 @@ export default function TopNav() {
             <span className="material-symbols-outlined text-[22px]">settings</span>
           </button>
 
-          {/* Avatar Placeholder */}
-          <div className="rounded-full bg-slate-200 w-8 h-8 flex-shrink-0" />
+          {/* Avatar + Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowUserMenu((prev) => !prev)}
+              className="rounded-full bg-primary text-on-primary w-8 h-8 flex-shrink-0 flex items-center justify-center text-xs font-semibold hover:ring-2 hover:ring-primary/20 transition-all"
+              aria-label="User menu"
+            >
+              {user ? getInitials(user.name) : '?'}
+            </button>
+
+            {showUserMenu && (
+              <>
+                {/* Backdrop to close menu */}
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowUserMenu(false)}
+                />
+                {/* Dropdown menu */}
+                <div className="absolute right-0 top-full mt-2 z-50 w-64 bg-surface-container-lowest rounded-xl border border-outline-variant/15 shadow-ambient-lg py-2">
+                  {user && (
+                    <div className="px-4 py-3 border-b border-outline-variant/10">
+                      <p className="text-sm font-semibold text-on-surface truncate">
+                        {user.name}
+                      </p>
+                      <p className="text-xs text-on-surface-variant truncate mt-0.5">
+                        {user.email}
+                      </p>
+                      <p className="text-xs text-primary font-medium mt-1">
+                        {roleLabels[user.role] || user.role}
+                      </p>
+                    </div>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors flex items-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-lg">logout</span>
+                    Sign out
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </header>

@@ -1,5 +1,7 @@
 import prisma from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 /* -------------------------------------------------------------------------- */
 /*  Fallback data used when the DB query fails or returns empty               */
 /* -------------------------------------------------------------------------- */

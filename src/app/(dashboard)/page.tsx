@@ -1,21 +1,27 @@
 import prisma from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 // ---------------------------------------------------------------------------
 // Data fetching
 // ---------------------------------------------------------------------------
 
 async function getDashboardData() {
   try {
-    const [branchCount, auditCount, issueCount, escalationCount] = await Promise.all([
+    const [branchCount, auditCount, issueCount, escalationCount, avgScore, pendingCount] = await Promise.all([
       prisma.branch.count({ where: { status: 'ACTIVE' } }),
       prisma.audit.count(),
       prisma.issue.count({ where: { status: { in: ['OPEN', 'IN_PROGRESS'] } } }),
       prisma.escalation.count({ where: { resolvedAt: null } }),
+      prisma.branch.aggregate({ where: { status: 'ACTIVE' }, _avg: { complianceScore: true } }),
+      prisma.audit.count({ where: { status: 'UNDER_REVIEW' } }),
     ]);
 
-    return { branchCount, auditCount, issueCount, escalationCount, dbError: false };
+    const complianceScore = Math.round((avgScore._avg.complianceScore ?? 0) * 10) / 10;
+
+    return { branchCount, auditCount, issueCount, escalationCount, complianceScore, pendingAudits: pendingCount, dbError: false };
   } catch {
-    return { branchCount: 0, auditCount: 0, issueCount: 0, escalationCount: 0, dbError: true };
+    return { branchCount: 0, auditCount: 0, issueCount: 0, escalationCount: 0, complianceScore: 0, pendingAudits: 0, dbError: true };
   }
 }
 
@@ -24,11 +30,7 @@ async function getDashboardData() {
 // ---------------------------------------------------------------------------
 
 export default async function HQDashboardPage() {
-  const { branchCount, auditCount, issueCount, escalationCount, dbError } = await getDashboardData();
-
-  // Derived display values
-  const complianceScore = 94.8;
-  const pendingAudits = 12;
+  const { branchCount, auditCount, issueCount, escalationCount, complianceScore, pendingAudits, dbError } = await getDashboardData();
 
   return (
     <div className="min-h-screen bg-background px-6 py-8 lg:px-10">
