@@ -120,9 +120,7 @@ export default async function AuditsPage() {
       take: 20,
     });
 
-    audits =
-      dbAudits.length > 0
-        ? dbAudits.map((a) => ({
+    audits = dbAudits.map((a) => ({
             id: a.id,
             branch: { name: a.branch.name, code: a.branch.code },
             auditor: { name: a.auditor.name },
@@ -131,10 +129,9 @@ export default async function AuditsPage() {
             status: a.status as string,
             score: a.score ?? 0,
             createdAt: a.createdAt,
-          }))
-        : fallbackAudits;
+          }));
   } catch {
-    audits = fallbackAudits;
+    audits = [];
   }
 
   /* ================================================================== */

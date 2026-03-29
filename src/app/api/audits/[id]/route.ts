@@ -97,6 +97,22 @@ export async function PATCH(
     const data: Record<string, unknown> = {};
 
     if (status !== undefined) {
+      const VALID_TRANSITIONS: Record<string, string[]> = {
+        DRAFT: ['SUBMITTED'],
+        SUBMITTED: ['UNDER_REVIEW', 'RETURNED'],
+        UNDER_REVIEW: ['APPROVED', 'RETURNED'],
+        RETURNED: ['SUBMITTED'],
+        APPROVED: ['CLOSED'],
+        CLOSED: [],
+      };
+      const allowed = VALID_TRANSITIONS[existing.status] || [];
+      if (!allowed.includes(status)) {
+        return NextResponse.json(
+          { error: `Cannot transition from ${existing.status} to ${status}. Allowed: ${allowed.join(', ') || 'none'}` },
+          { status: 400 }
+        );
+      }
+
       data.status = status;
 
       if (status === 'SUBMITTED' && !existing.submittedAt) {

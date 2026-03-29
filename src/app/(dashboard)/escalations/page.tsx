@@ -16,14 +16,17 @@ async function getData() {
 }
 
 export default async function EscalationsPage() {
-  const escalations = await getData();
+  const dbEscalations = await getData();
 
-  const demoEscalations = [
-    { id: '1', branch: 'Downtown Seattle #04', issue: 'Health Protocol Violation', level: 3, duration: '48 Hours', assignee: 'Regional Director', status: 'active' },
-    { id: '2', branch: 'Miami Beach #12', issue: 'Major Inventory Deficit', level: 2, duration: '24 Hours', assignee: 'Area Manager', status: 'active' },
-    { id: '3', branch: 'Boston Hub #02', issue: 'Unresolved SOP Gap', level: 1, duration: '72 Hours', assignee: 'Operations Lead', status: 'active' },
-    { id: '4', branch: 'East Ridge Mall', issue: 'Cold Storage Failure', level: 3, duration: '12 Hours', assignee: 'VP Operations', status: 'resolved' },
-  ];
+  const displayEscalations = dbEscalations.map((esc: any) => ({
+    id: esc.id,
+    branch: esc.issue?.branch?.name ?? 'Unknown',
+    issue: esc.issue?.title ?? 'Unknown',
+    level: esc.level,
+    duration: esc.resolvedAt ? 'Resolved' : `${Math.round((Date.now() - new Date(esc.triggeredAt).getTime()) / 3600000)}h active`,
+    assignee: esc.escalatedTo?.name ?? 'Unassigned',
+    status: esc.resolvedAt ? 'resolved' : 'active',
+  }));
 
   return (
     <div className="max-w-[1400px] mx-auto">
@@ -66,7 +69,7 @@ export default async function EscalationsPage() {
         <div className="p-6 border-b border-surface-container-low flex justify-between items-center">
           <h2 className="text-xl font-bold tracking-tight text-on-surface">Active Escalation Queue</h2>
           <span className="text-xs font-bold text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">
-            {escalations.length || demoEscalations.length} Items
+            {displayEscalations.length} Items
           </span>
         </div>
         <table className="w-full text-left">
@@ -81,7 +84,7 @@ export default async function EscalationsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-surface-container-low">
-            {demoEscalations.map((esc) => (
+            {displayEscalations.map((esc) => (
               <tr key={esc.id} className="hover:bg-slate-50 transition-colors">
                 <td className="px-6 py-4">
                   <p className="font-bold text-sm text-on-surface">{esc.branch}</p>

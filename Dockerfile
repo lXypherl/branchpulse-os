@@ -49,4 +49,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["sh", "-c", "node_modules/.bin/prisma db push --skip-generate --accept-data-loss 2>/dev/null; node server.js"]
+CMD ["sh", "-c", "node_modules/.bin/prisma db push --skip-generate 2>&1 || echo 'WARNING: Schema sync failed - check DATABASE_URL'; node server.js"]

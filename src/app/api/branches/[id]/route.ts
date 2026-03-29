@@ -92,6 +92,9 @@ export async function PATCH(
       );
     }
 
+    delete body.complianceScore;
+    delete body.lastAuditDate;
+
     const {
       name,
       code,
@@ -99,8 +102,6 @@ export async function PATCH(
       status,
       managerId,
       areaId,
-      complianceScore,
-      lastAuditDate,
       operatingHours,
     } = body as {
       name?: string;
@@ -109,8 +110,6 @@ export async function PATCH(
       status?: string;
       managerId?: string | null;
       areaId?: string;
-      complianceScore?: number;
-      lastAuditDate?: string;
       operatingHours?: string | null;
     };
 
@@ -121,8 +120,6 @@ export async function PATCH(
     if (status !== undefined) data.status = status;
     if (managerId !== undefined) data.managerId = managerId;
     if (areaId !== undefined) data.areaId = areaId;
-    if (complianceScore !== undefined) data.complianceScore = complianceScore;
-    if (lastAuditDate !== undefined) data.lastAuditDate = new Date(lastAuditDate);
     if (operatingHours !== undefined) data.operatingHours = operatingHours;
 
     const branch = await prisma.branch.update({
@@ -161,7 +158,17 @@ export async function DELETE(
       );
     }
 
-    await prisma.branch.delete({ where: { id } });
+    try {
+      await prisma.branch.delete({ where: { id } });
+    } catch (error: any) {
+      if (error?.code === 'P2003') {
+        return NextResponse.json(
+          { error: 'Cannot delete branch with existing audits, issues, or other records. Deactivate it instead.' },
+          { status: 409 }
+        );
+      }
+      throw error;
+    }
 
     return NextResponse.json({ message: 'Branch deleted successfully' });
   } catch (error) {

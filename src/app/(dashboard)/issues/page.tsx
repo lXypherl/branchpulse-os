@@ -243,7 +243,7 @@ async function getIssues(): Promise<DemoIssue[]> {
       createdAt: issue.createdAt,
     }));
   } catch {
-    return DEMO_ISSUES;
+    return [];
   }
 }
 

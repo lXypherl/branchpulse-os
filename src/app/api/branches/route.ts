@@ -28,8 +28,13 @@ export async function GET(request: NextRequest) {
       ];
     }
 
+    const take = Math.min(parseInt(searchParams.get('take') || '100'), 100);
+    const skip = parseInt(searchParams.get('skip') || '0');
+
     const branches = await prisma.branch.findMany({
       where,
+      take,
+      skip,
       include: {
         area: {
           include: {
@@ -80,15 +85,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const existingBranch = await prisma.branch.findUnique({
-      where: { code },
-    });
-
-    if (existingBranch) {
-      return NextResponse.json(
-        { error: `Branch with code "${code}" already exists` },
-        { status: 400 }
-      );
+    const VALID_STATUSES = ['ACTIVE', 'MAINTENANCE', 'INACTIVE'];
+    if (status && !VALID_STATUSES.includes(status)) {
+      return NextResponse.json({ error: `Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}` }, { status: 400 });
     }
 
     const area = await prisma.area.findUnique({ where: { id: areaId } });
@@ -99,33 +98,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const branch = await prisma.branch.create({
-      data: {
-        name,
-        code,
-        areaId,
-        address: address ?? '',
-        managerId: managerId ?? null,
-        operatingHours: operatingHours ?? null,
-        status: (status as any) ?? undefined,
-      },
-      include: {
-        area: {
-          include: { region: true },
+    try {
+      const branch = await prisma.branch.create({
+        data: {
+          name,
+          code,
+          areaId,
+          address: address ?? '',
+          managerId: managerId ?? null,
+          operatingHours: operatingHours ?? null,
+          status: (status as any) ?? undefined,
         },
-        manager: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-            avatarUrl: true,
+        include: {
+          area: {
+            include: { region: true },
+          },
+          manager: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+              avatarUrl: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    return NextResponse.json(branch, { status: 201 });
+      return NextResponse.json(branch, { status: 201 });
+    } catch (error: any) {
+      if (error?.code === 'P2002') {
+        return NextResponse.json({ error: 'Branch code already exists' }, { status: 409 });
+      }
+      throw error;
+    }
   } catch (error) {
     console.error('Failed to create branch:', error);
     return NextResponse.json(

@@ -13,15 +13,16 @@ async function getData() {
 }
 
 export default async function StockRequestsPage() {
-  await getData();
+  const dbRequests = await getData();
 
-  const demoRequests = [
-    { id: '1', branch: 'Lexington Ave (Flagship)', requester: 'Elena Rodriguez', items: 'Office Supplies, Cleaning Materials', status: 'PENDING', date: 'Mar 28, 2026' },
-    { id: '2', branch: 'Chelsea Market Hub', requester: 'Marcus Chen', items: 'POS Paper Rolls (x50), Receipt Printer Ink', status: 'APPROVED', date: 'Mar 27, 2026' },
-    { id: '3', branch: 'Downtown Flagship', requester: 'James Smith', items: 'Safety Equipment, Fire Extinguisher', status: 'FULFILLED', date: 'Mar 25, 2026' },
-    { id: '4', branch: 'SoHo Boutique', requester: 'David Miller', items: 'Display Shelving Units (x3)', status: 'REJECTED', date: 'Mar 24, 2026' },
-    { id: '5', branch: 'Times Square North', requester: 'Sarah Jenkins', items: 'Maintenance Tools, Light Bulbs (x100)', status: 'PENDING', date: 'Mar 29, 2026' },
-  ];
+  const demoRequests = dbRequests.map((r: any) => ({
+    id: r.id,
+    branch: r.branch?.name ?? 'Unknown',
+    requester: r.requestedBy?.name ?? 'Unknown',
+    items: Array.isArray(r.items) ? (r.items as any[]).map((i: any) => i.name || i).join(', ') : String(r.items),
+    status: r.status,
+    date: new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+  }));
 
   const statusColor: Record<string, string> = {
     PENDING: 'bg-amber-100 text-amber-700',

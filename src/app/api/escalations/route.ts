@@ -12,8 +12,13 @@ export async function GET(request: NextRequest) {
       where.resolvedAt = null;
     }
 
+    const take = Math.min(parseInt(searchParams.get('take') || '100'), 100);
+    const skip = parseInt(searchParams.get('skip') || '0');
+
     const escalations = await prisma.escalation.findMany({
       where,
+      take,
+      skip,
       include: {
         issue: {
           include: {
@@ -94,35 +99,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Determine escalation level: use provided level or auto-increment
-    let escalationLevel = level;
-    if (escalationLevel === undefined) {
-      const maxEscalation = await prisma.escalation.findFirst({
+    const escalation = await prisma.$transaction(async (tx) => {
+      const latest = await tx.escalation.findFirst({
         where: { issueId },
         orderBy: { level: 'desc' },
-        select: { level: true },
       });
-      escalationLevel = (maxEscalation?.level ?? 0) + 1;
-    }
-
-    const escalation = await prisma.escalation.create({
-      data: {
-        issueId,
-        escalatedToId,
-        reason,
-        level: escalationLevel,
-      },
-      include: {
-        issue: {
-          include: {
-            branch: { select: { id: true, name: true, code: true } },
-            reportedBy: { select: { id: true, name: true } },
+      const nextLevel = level ?? (latest ? latest.level + 1 : 1);
+      return tx.escalation.create({
+        data: { issueId, level: nextLevel, escalatedToId, reason },
+        include: {
+          issue: {
+            include: {
+              branch: { select: { id: true, name: true, code: true } },
+              reportedBy: { select: { id: true, name: true } },
+            },
+          },
+          escalatedTo: {
+            select: { id: true, name: true, email: true, role: true },
           },
         },
-        escalatedTo: {
-          select: { id: true, name: true, email: true, role: true },
-        },
-      },
+      });
     });
 
     return NextResponse.json(escalation, { status: 201 });

@@ -22,8 +22,13 @@ export async function GET(request: NextRequest) {
       where.branchId = branchId;
     }
 
+    const take = Math.min(parseInt(searchParams.get('take') || '100'), 100);
+    const skip = parseInt(searchParams.get('skip') || '0');
+
     const issues = await prisma.issue.findMany({
       where,
+      take,
+      skip,
       include: {
         branch: {
           select: {
@@ -131,6 +136,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const VALID_SEVERITIES = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
+    if (severity && !VALID_SEVERITIES.includes(severity)) {
+      return NextResponse.json({ error: `Invalid severity. Must be one of: ${VALID_SEVERITIES.join(', ')}` }, { status: 400 });
+    }
+
     const reporter = await prisma.user.findUnique({
       where: { id: reportedById },
     });
@@ -139,6 +149,15 @@ export async function POST(request: NextRequest) {
         { error: `User with id "${reportedById}" not found` },
         { status: 400 }
       );
+    }
+
+    if (assignedToId) {
+      const assignee = await prisma.user.findUnique({ where: { id: assignedToId } });
+      if (!assignee) return NextResponse.json({ error: 'Assigned user not found' }, { status: 400 });
+    }
+    if (auditId) {
+      const audit = await prisma.audit.findUnique({ where: { id: auditId } });
+      if (!audit) return NextResponse.json({ error: 'Audit not found' }, { status: 400 });
     }
 
     const issue = await prisma.issue.create({

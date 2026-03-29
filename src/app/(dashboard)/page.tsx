@@ -13,15 +13,9 @@ async function getDashboardData() {
       prisma.escalation.count({ where: { resolvedAt: null } }),
     ]);
 
-    return { branchCount, auditCount, issueCount, escalationCount };
+    return { branchCount, auditCount, issueCount, escalationCount, dbError: false };
   } catch {
-    // Fallback demo values when the database is unavailable
-    return {
-      branchCount: 42,
-      auditCount: 128,
-      issueCount: 14,
-      escalationCount: 3,
-    };
+    return { branchCount: 0, auditCount: 0, issueCount: 0, escalationCount: 0, dbError: true };
   }
 }
 
@@ -30,7 +24,7 @@ async function getDashboardData() {
 // ---------------------------------------------------------------------------
 
 export default async function HQDashboardPage() {
-  const { branchCount, auditCount, issueCount, escalationCount } = await getDashboardData();
+  const { branchCount, auditCount, issueCount, escalationCount, dbError } = await getDashboardData();
 
   // Derived display values
   const complianceScore = 94.8;
@@ -38,6 +32,15 @@ export default async function HQDashboardPage() {
 
   return (
     <div className="min-h-screen bg-background px-6 py-8 lg:px-10">
+      {dbError && (
+        <div className="mb-6 p-4 bg-error-container text-on-error-container rounded-xl flex items-center gap-3">
+          <span className="material-symbols-outlined">error</span>
+          <div>
+            <p className="font-bold text-sm">Database Connection Error</p>
+            <p className="text-xs">Unable to fetch live data. The values shown below may be incomplete. Check your database connection.</p>
+          </div>
+        </div>
+      )}
       {/* ================================================================ */}
       {/* 1. Page Header                                                   */}
       {/* ================================================================ */}

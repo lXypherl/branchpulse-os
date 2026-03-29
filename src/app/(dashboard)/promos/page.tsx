@@ -13,13 +13,25 @@ async function getData() {
 }
 
 export default async function PromosPage() {
-  await getData();
+  const dbPromos = await getData();
 
-  const demoCampaigns = [
-    { id: '1', name: 'Summer Safety First', status: 'active', branches: 42, confirmed: 38, failed: 1, pending: 3, dueDate: 'Apr 5, 2026' },
-    { id: '2', name: 'Q1 Inventory Blitz', status: 'completed', branches: 42, confirmed: 42, failed: 0, pending: 0, dueDate: 'Mar 15, 2026' },
-    { id: '3', name: 'Spring Menu Rollout', status: 'active', branches: 42, confirmed: 29, failed: 2, pending: 11, dueDate: 'Apr 1, 2026' },
-  ];
+  const demoCampaigns = dbPromos.length > 0
+    ? dbPromos.map((p: any) => {
+        const items = (p.checklistItems as any[]) || [];
+        const confirmed = items.filter((i: any) => i.completed).length;
+        const failed = items.filter((i: any) => i.failed).length;
+        return {
+          id: p.id,
+          name: p.name,
+          status: p.status === 'CONFIRMED' ? 'completed' : p.status === 'FAILED' ? 'failed' : 'active',
+          branches: items.length || 1,
+          confirmed,
+          failed,
+          pending: Math.max(0, (items.length || 1) - confirmed - failed),
+          dueDate: p.dueDate ? new Date(p.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No date',
+        };
+      })
+    : [];
 
   return (
     <div className="max-w-[1400px] mx-auto">

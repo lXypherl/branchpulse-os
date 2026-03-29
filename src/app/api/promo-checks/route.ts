@@ -17,8 +17,13 @@ export async function GET(request: NextRequest) {
       where.branchId = branchId;
     }
 
+    const take = Math.min(parseInt(searchParams.get('take') || '100'), 100);
+    const skip = parseInt(searchParams.get('skip') || '0');
+
     const promoChecks = await prisma.promoCheck.findMany({
       where,
+      take,
+      skip,
       include: {
         branch: {
           select: {
@@ -75,6 +80,11 @@ export async function POST(request: NextRequest) {
         { error: `Branch with id "${branchId}" not found` },
         { status: 400 }
       );
+    }
+
+    const VALID_STATUSES = ['PENDING', 'CONFIRMED', 'FAILED'];
+    if (status && !VALID_STATUSES.includes(status)) {
+      return NextResponse.json({ error: `Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}` }, { status: 400 });
     }
 
     const promoCheck = await prisma.promoCheck.create({

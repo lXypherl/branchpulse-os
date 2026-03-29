@@ -17,8 +17,13 @@ export async function GET(request: NextRequest) {
       where.branchId = branchId;
     }
 
+    const take = Math.min(parseInt(searchParams.get('take') || '100'), 100);
+    const skip = parseInt(searchParams.get('skip') || '0');
+
     const stockRequests = await prisma.stockRequest.findMany({
       where,
+      take,
+      skip,
       include: {
         branch: {
           select: {
@@ -94,6 +99,11 @@ export async function POST(request: NextRequest) {
         { error: `User with id "${requestedById}" not found` },
         { status: 400 }
       );
+    }
+
+    const VALID_STATUSES = ['PENDING', 'APPROVED', 'REJECTED', 'FULFILLED'];
+    if (status && !VALID_STATUSES.includes(status)) {
+      return NextResponse.json({ error: `Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}` }, { status: 400 });
     }
 
     const stockRequest = await prisma.stockRequest.create({

@@ -143,7 +143,7 @@ async function getBranches(): Promise<BranchRow[]> {
       regionName: b.area.region.name,
     }));
   } catch {
-    return FALLBACK_BRANCHES;
+    return [];
   }
 }
 
@@ -173,10 +173,19 @@ export default async function BranchRegistryPage() {
   const displayCount = Math.min(totalCount, 10);
 
   /* Pick the first branch as the "selected" detail target */
-  const selected = branches[0] ?? FALLBACK_BRANCHES[0];
+  const selected = branches[0] ?? null;
 
   return (
     <div className="space-y-6">
+      {branches.length === 0 && (
+        <div className="p-4 bg-error-container text-on-error-container rounded-xl flex items-center gap-3">
+          <span className="material-symbols-outlined">error</span>
+          <div>
+            <p className="font-bold text-sm">Unable to load branch data</p>
+            <p className="text-xs">Database connection failed. Please check your database configuration.</p>
+          </div>
+        </div>
+      )}
       {/* ------------------------------------------------------------------ */}
       {/*  Page Header                                                       */}
       {/* ------------------------------------------------------------------ */}
@@ -338,7 +347,7 @@ export default async function BranchRegistryPage() {
         {/* -------------------------------------------------------------- */}
         {/*  Right: Branch Detail Panel                                     */}
         {/* -------------------------------------------------------------- */}
-        <aside className="hidden w-96 shrink-0 lg:block">
+        {selected && <aside className="hidden w-96 shrink-0 lg:block">
           <div className="sticky top-28 space-y-5">
             {/* ---------------------------------------------------------- */}
             {/*  1. Branch Header Card                                      */}
@@ -457,7 +466,7 @@ export default async function BranchRegistryPage() {
               </ol>
             </div>
           </div>
-        </aside>
+        </aside>}
       </div>
     </div>
   );
