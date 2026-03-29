@@ -69,17 +69,22 @@ export default function LoginPage() {
       <div className="relative z-10 max-w-md mx-auto px-6 py-12">
         {/* Header */}
         <div className="text-center mb-12">
+          {/* Parent brand */}
           {/* Logo */}
-          <div className="inline-flex items-center gap-3 mb-8">
+          <div className="inline-flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25">
               <span className="material-symbols-outlined text-white text-xl filled-icon">
                 pulse_alert
               </span>
             </div>
             <span className="text-2xl font-black tracking-tighter text-on-surface">
-              BranchPulse OS
+              Xyloquent Branch OS
             </span>
           </div>
+
+          <p className="text-[11px] font-medium text-on-surface-variant/70 mb-8">
+            Franchise Operations Platform
+          </p>
 
           <h1 className="text-3xl font-bold text-on-surface mb-3 tracking-tight">
             Welcome back
@@ -217,7 +222,7 @@ export default function LoginPage() {
         {/* Footer */}
         <div className="mt-16 text-center">
           <p className="text-xs text-outline">
-            BranchPulse OS &middot; Franchise Operations Platform
+            Xyloquent Branch OS
           </p>
         </div>
       </div>

@@ -1,4 +1,6 @@
-# BranchPulse OS - Training Manual
+# Xyloquent Branch OS
+
+## Training Manual
 
 **Version 1.0 | March 2026**
 **Franchise & Multi-Branch Operations Platform**
@@ -27,9 +29,9 @@
 
 ## 1. Introduction
 
-### What is BranchPulse OS?
+### What is Xyloquent Branch OS?
 
-BranchPulse OS is a centralized operating layer for franchise and multi-branch organizations. It helps headquarters teams standardize audits, enforce SOPs, route issues through deterministic escalation workflows, validate promo execution, and maintain chain-wide visibility from a single control surface.
+Xyloquent Branch OS is a centralized operating layer for franchise and multi-branch organizations. It helps headquarters teams standardize audits, enforce SOPs, route issues through deterministic escalation workflows, validate promo execution, and maintain chain-wide visibility from a single control surface.
 
 ### Who is it for?
 
@@ -56,7 +58,7 @@ BranchPulse OS is a centralized operating layer for franchise and multi-branch o
 
 ### Logging In
 
-1. Open your browser and navigate to the BranchPulse OS URL
+1. Open your browser and navigate to the Xyloquent Branch OS URL
 2. You will see the **Welcome back** login screen
 3. Enter your **email address** and **password**
 4. Click **Sign in**
@@ -158,7 +160,7 @@ Sandra logs in with `sandra.chen@xyloquent.com` and sees the **Global Operations
 - BR-0018 Lakewood: Financial Audit issue, 48h overdue
 - BR-0031 Riverside: Equipment Failure, 24h active
 
-**She reads the BranchPulse AI recommendation:** "West region shows a 6% compliance dip driven by 3 branches missing H&S checks this week. Recommend deploying a field auditor to BR-0042 within 24 hours."
+**She reads the Xyloquent AI recommendation:** "West region shows a 6% compliance dip driven by 3 branches missing H&S checks this week. Recommend deploying a field auditor to BR-0042 within 24 hours."
 
 **She checks the Network Health heatmap** - most branches are green (optimal), a few blue (warning), and 2 red (critical) pulsing squares.
 
@@ -432,7 +434,7 @@ Olivia can view all dashboards, drill into any module page, and review all data 
 Sandra navigates to **SOP Library**.
 
 **AI Q&A Widget (top banner):**
-A dark gradient panel with the BranchPulse AI assistant. "Ask questions about any SOP document. Answers are grounded exclusively on governed source content."
+A dark gradient panel with the Xyloquent AI assistant. "Ask questions about any SOP document. Answers are grounded exclusively on governed source content."
 
 **SOP Document Grid (6 cards):**
 
@@ -487,7 +489,7 @@ The Global Operations Command is the nerve center for HQ-level users. It provide
 - Green bars = Issue resolution rate
 - Shows percentage values below each region
 
-**BranchPulse AI Widget:**
+**Xyloquent AI Widget:**
 - Gradient card with AI-generated insight
 - Provides specific, data-driven recommendations
 - "Review Suggested Action" button for follow-up
@@ -922,5 +924,5 @@ Xyloquent Corp
 
 **End of Training Manual**
 
-*BranchPulse OS - Franchise Operations Platform*
-*Built by Xyloquent Corp | Powered by Next.js, PostgreSQL, and Docker*
+*Xyloquent Branch OS*
+*Franchise Operations Platform | Powered by Next.js, PostgreSQL, and Docker*

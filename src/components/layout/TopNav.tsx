@@ -62,9 +62,9 @@ export default function TopNav({ user }: TopNavProps) {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl shadow-[0px_12px_32px_rgba(26,27,31,0.06)] border-b border-slate-200/50">
       <div className="flex items-center justify-between h-16 px-8">
         {/* Left - Brand */}
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 flex items-center gap-2.5">
           <Link href="/" className="text-xl font-black tracking-tighter text-slate-900">
-            BranchPulse OS
+            Xyloquent Branch OS
           </Link>
         </div>
 

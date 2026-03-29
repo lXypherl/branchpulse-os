@@ -8,7 +8,7 @@ async function hashPassword(password: string): Promise<string> {
 }
 
 async function main() {
-  console.log('Seeding BranchPulse OS database...');
+  console.log('Seeding Xyloquent Branch OS database...');
 
   // Hash the default password once and reuse for all users
   const defaultPasswordHash = await hashPassword('password123');
@@ -301,7 +301,7 @@ async function main() {
         status: 'APPROVED',
         score: 96.5,
         findings: 'Excellent safety compliance. All fire extinguishers within inspection dates. Emergency exits clearly marked. Minor suggestion: update first-aid kit inventory labels.',
-        evidenceUrls: ['https://storage.branchpulse.io/audits/nyc001-safety-01.jpg', 'https://storage.branchpulse.io/audits/nyc001-safety-02.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/audits/nyc001-safety-01.jpg', 'https://storage.xyloquent.com/audits/nyc001-safety-02.jpg'],
         submittedAt: new Date('2026-03-15T14:30:00Z'),
         reviewedAt: new Date('2026-03-16T09:00:00Z'),
         reviewerId: priya.id,
@@ -316,7 +316,7 @@ async function main() {
         status: 'APPROVED',
         score: 91.2,
         findings: 'Strong overall operations. Staff uniforms consistent. Slight delay observed during peak-hour shift transitions. Recommend reviewing handoff procedures.',
-        evidenceUrls: ['https://storage.branchpulse.io/audits/nyc002-standard-01.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/audits/nyc002-standard-01.jpg'],
         submittedAt: new Date('2026-03-10T16:00:00Z'),
         reviewedAt: new Date('2026-03-11T10:30:00Z'),
         reviewerId: priya.id,
@@ -331,7 +331,7 @@ async function main() {
         status: 'UNDER_REVIEW',
         score: 88.0,
         findings: 'Good stock rotation overall. Found 3 items past best-before date in cold storage. FIFO not consistently applied in dry goods section.',
-        evidenceUrls: ['https://storage.branchpulse.io/audits/nyc003-inventory-01.jpg', 'https://storage.branchpulse.io/audits/nyc003-inventory-02.jpg', 'https://storage.branchpulse.io/audits/nyc003-inventory-03.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/audits/nyc003-inventory-01.jpg', 'https://storage.xyloquent.com/audits/nyc003-inventory-02.jpg', 'https://storage.xyloquent.com/audits/nyc003-inventory-03.jpg'],
         submittedAt: new Date('2026-03-28T11:00:00Z'),
         reviewerId: emma.id,
         createdAt: new Date('2026-02-27T09:00:00Z'),
@@ -345,7 +345,7 @@ async function main() {
         status: 'RETURNED',
         score: 72.3,
         findings: 'Multiple safety concerns found: emergency lighting in back hallway non-functional, expired fire suppression system certification, wet floor signs missing from storage. Requires immediate remediation.',
-        evidenceUrls: ['https://storage.branchpulse.io/audits/nyc004-safety-01.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/audits/nyc004-safety-01.jpg'],
         submittedAt: new Date('2026-01-20T15:00:00Z'),
         reviewedAt: new Date('2026-01-21T09:00:00Z'),
         reviewerId: priya.id,
@@ -375,7 +375,7 @@ async function main() {
         status: 'APPROVED',
         score: 89.4,
         findings: 'Safety compliance generally good. HVAC system filters need replacement schedule review. All certifications current.',
-        evidenceUrls: ['https://storage.branchpulse.io/audits/mia001-safety-01.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/audits/mia001-safety-01.jpg'],
         submittedAt: new Date('2026-03-05T14:00:00Z'),
         reviewedAt: new Date('2026-03-06T10:00:00Z'),
         reviewerId: david.id,
@@ -390,7 +390,7 @@ async function main() {
         status: 'CLOSED',
         score: 64.2,
         findings: 'Pre-renovation safety audit. Multiple systems offline pending renovation. Documented current state for insurance and compliance records. Branch closed to public.',
-        evidenceUrls: ['https://storage.branchpulse.io/audits/mia003-safety-01.jpg', 'https://storage.branchpulse.io/audits/mia003-safety-02.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/audits/mia003-safety-01.jpg', 'https://storage.xyloquent.com/audits/mia003-safety-02.jpg'],
         submittedAt: new Date('2025-12-15T13:00:00Z'),
         reviewedAt: new Date('2025-12-16T09:00:00Z'),
         reviewerId: david.id,
@@ -420,7 +420,7 @@ async function main() {
         status: 'APPROVED',
         score: 98.2,
         findings: 'Outstanding inventory management. Perfect FIFO compliance, zero waste above threshold, digital tracking system fully utilized.',
-        evidenceUrls: ['https://storage.branchpulse.io/audits/sf001-inventory-01.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/audits/sf001-inventory-01.jpg'],
         submittedAt: new Date('2026-03-25T17:00:00Z'),
         reviewedAt: new Date('2026-03-26T08:00:00Z'),
         reviewerId: david.id,
@@ -450,7 +450,7 @@ async function main() {
         status: 'SUBMITTED',
         score: 95.4,
         findings: 'Very well-run branch. Minor point deduction for signage updates needed. Excellent staff engagement scores.',
-        evidenceUrls: ['https://storage.branchpulse.io/audits/dc002-standard-01.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/audits/dc002-standard-01.jpg'],
         submittedAt: new Date('2026-03-22T14:00:00Z'),
         createdAt: new Date('2026-03-21T09:00:00Z'),
       },
@@ -463,7 +463,7 @@ async function main() {
         status: 'RETURNED',
         score: 76.4,
         findings: 'Several inventory discrepancies found. Manual counts do not match POS records for 12 SKUs. Cold chain temperature logs have 3-day gap. Immediate corrective action required.',
-        evidenceUrls: ['https://storage.branchpulse.io/audits/la002-inventory-01.jpg', 'https://storage.branchpulse.io/audits/la002-inventory-02.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/audits/la002-inventory-01.jpg', 'https://storage.xyloquent.com/audits/la002-inventory-02.jpg'],
         submittedAt: new Date('2026-01-30T15:00:00Z'),
         reviewedAt: new Date('2026-01-31T10:00:00Z'),
         reviewerId: david.id,
@@ -478,7 +478,7 @@ async function main() {
         status: 'CLOSED',
         score: 69.5,
         findings: 'Branch under maintenance. Multiple non-compliance issues documented before shutdown: HVAC failure, plumbing code violation in restroom, outdated fire panel. All tracked for post-renovation remediation.',
-        evidenceUrls: ['https://storage.branchpulse.io/audits/phl003-safety-01.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/audits/phl003-safety-01.jpg'],
         submittedAt: new Date('2025-12-20T14:00:00Z'),
         reviewedAt: new Date('2025-12-21T09:00:00Z'),
         reviewerId: priya.id,
@@ -515,7 +515,7 @@ async function main() {
         status: 'IN_PROGRESS',
         category: 'Safety',
         dueDate: new Date('2026-02-01'),
-        evidenceUrls: ['https://storage.branchpulse.io/issues/nyc004-lighting-01.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/issues/nyc004-lighting-01.jpg'],
         correctiveAction: 'Replacement units ordered. Electrician scheduled for Feb 3.',
         auditId: audits[3].id,
       },
@@ -531,7 +531,7 @@ async function main() {
         status: 'OPEN',
         category: 'Safety',
         dueDate: new Date('2026-02-15'),
-        evidenceUrls: ['https://storage.branchpulse.io/issues/nyc004-fire-cert-01.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/issues/nyc004-fire-cert-01.jpg'],
         auditId: audits[3].id,
       },
     }),
@@ -546,7 +546,7 @@ async function main() {
         status: 'UNDER_REVIEW',
         category: 'Inventory',
         dueDate: new Date('2026-04-10'),
-        evidenceUrls: ['https://storage.branchpulse.io/issues/nyc003-fifo-01.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/issues/nyc003-fifo-01.jpg'],
         correctiveAction: 'Staff retraining completed March 5. New labeling system implemented. Awaiting follow-up verification.',
         auditId: audits[2].id,
       },
@@ -562,7 +562,7 @@ async function main() {
         status: 'RESOLVED',
         category: 'Inventory',
         dueDate: new Date('2026-03-30'),
-        evidenceUrls: ['https://storage.branchpulse.io/issues/nyc003-expired-01.jpg', 'https://storage.branchpulse.io/issues/nyc003-expired-02.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/issues/nyc003-expired-01.jpg', 'https://storage.xyloquent.com/issues/nyc003-expired-02.jpg'],
         correctiveAction: 'Items disposed. Daily check sheet revised with mandatory sign-off. Additional cooler inspection added at shift change.',
         auditId: audits[2].id,
       },
@@ -610,7 +610,7 @@ async function main() {
         status: 'IN_PROGRESS',
         category: 'Inventory',
         dueDate: new Date('2026-02-28'),
-        evidenceUrls: ['https://storage.branchpulse.io/issues/la002-pos-01.pdf'],
+        evidenceUrls: ['https://storage.xyloquent.com/issues/la002-pos-01.pdf'],
         correctiveAction: 'Full recount scheduled. POS vendor consulted for system audit.',
         auditId: audits[11].id,
       },
@@ -642,7 +642,7 @@ async function main() {
         status: 'OPEN',
         category: 'Maintenance',
         dueDate: new Date('2026-04-30'),
-        evidenceUrls: ['https://storage.branchpulse.io/issues/phl003-plumbing-01.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/issues/phl003-plumbing-01.jpg'],
         auditId: audits[12].id,
       },
     }),
@@ -657,7 +657,7 @@ async function main() {
         status: 'OPEN',
         category: 'Safety',
         dueDate: new Date('2026-05-15'),
-        evidenceUrls: ['https://storage.branchpulse.io/issues/phl003-firepanel-01.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/issues/phl003-firepanel-01.jpg'],
         auditId: audits[12].id,
       },
     }),
@@ -686,7 +686,7 @@ async function main() {
         status: 'IN_PROGRESS',
         category: 'Maintenance',
         dueDate: new Date('2026-04-10'),
-        evidenceUrls: ['https://storage.branchpulse.io/issues/atl002-door-01.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/issues/atl002-door-01.jpg'],
         correctiveAction: 'Replacement part ordered. ETA April 3.',
       },
     }),
@@ -730,7 +730,7 @@ async function main() {
         status: 'OPEN',
         category: 'Safety',
         dueDate: new Date('2026-04-05'),
-        evidenceUrls: ['https://storage.branchpulse.io/issues/atl003-pothole-01.jpg'],
+        evidenceUrls: ['https://storage.xyloquent.com/issues/atl003-pothole-01.jpg'],
       },
     }),
     prisma.issue.create({
@@ -1079,7 +1079,7 @@ async function main() {
       data: {
         userId: olivia.id,
         title: 'Weekly Executive Briefing',
-        message: 'Your weekly BranchPulse executive briefing is ready. Key highlights: SF Ferry Building achieved 100% compliance, 3 critical issues require attention.',
+        message: 'Your weekly Xyloquent Branch executive briefing is ready. Key highlights: SF Ferry Building achieved 100% compliance, 3 critical issues require attention.',
         read: false,
         type: 'REPORT',
         createdAt: new Date('2026-03-29T07:30:00Z'),
@@ -1364,7 +1364,7 @@ Provide assistance to customers with disabilities proactively but respectfully. 
 
 Section 8: Service Recovery and Follow-Up
 
-For any significant service failure, follow up with the customer within 48 hours by phone or email. Offer a tangible gesture of goodwill proportional to the inconvenience. Track all service recovery actions in the BranchPulse system.`,
+For any significant service failure, follow up with the customer within 48 hours by phone or email. Offer a tangible gesture of goodwill proportional to the inconvenience. Track all service recovery actions in the Xyloquent Branch system.`,
         createdAt: new Date('2025-06-15T10:00:00Z'),
         updatedAt: new Date('2026-02-28T11:00:00Z'),
       },
@@ -1391,11 +1391,11 @@ Tier C: Low-value or slow-moving items requiring monthly monitoring
 
 Section 3: Par Level Management
 
-Par levels (minimum stock quantities) are established for all Tier A and Tier B items. Par levels are reviewed and adjusted quarterly based on sales trends, seasonality, and promotional calendars. When stock falls below par level, an automatic reorder notification is generated in BranchPulse.
+Par levels (minimum stock quantities) are established for all Tier A and Tier B items. Par levels are reviewed and adjusted quarterly based on sales trends, seasonality, and promotional calendars. When stock falls below par level, an automatic reorder notification is generated in Xyloquent Branch.
 
 Section 4: Ordering Procedures
 
-Standard orders must be placed by 2:00 PM local time for next-day delivery. Emergency orders incur a 15% surcharge and should only be placed for critical stock-outs. All orders must be placed through the BranchPulse procurement module.
+Standard orders must be placed by 2:00 PM local time for next-day delivery. Emergency orders incur a 15% surcharge and should only be placed for critical stock-outs. All orders must be placed through the Xyloquent Branch procurement module.
 
 Section 5: Receiving Procedures
 
@@ -1411,7 +1411,7 @@ All inventory must be rotated using the First In, First Out method. New stock go
 
 Section 8: Cycle Counting
 
-Tier A items: counted daily. Tier B items: counted weekly (every Monday). Tier C items: counted monthly (first business day of month). All counts must be entered into BranchPulse by end of the counting day. Variances exceeding 3% must be investigated.
+Tier A items: counted daily. Tier B items: counted weekly (every Monday). Tier C items: counted monthly (first business day of month). All counts must be entered into Xyloquent Branch by end of the counting day. Variances exceeding 3% must be investigated.
 
 Section 9: Full Physical Inventory
 
@@ -1439,7 +1439,7 @@ Maintain relationships with approved vendors only. Report any vendor performance
 
 Section 15: System and Technology
 
-BranchPulse is the system of record for all inventory data. Manual workarounds are permitted only during system outages and must be reconciled within 24 hours of system restoration.`,
+Xyloquent Branch is the system of record for all inventory data. Manual workarounds are permitted only during system outages and must be reconciled within 24 hours of system restoration.`,
         createdAt: new Date('2025-09-01T08:00:00Z'),
         updatedAt: new Date('2026-01-20T16:00:00Z'),
       },
@@ -1469,7 +1469,7 @@ Section 3: Medical Emergency
 
 For any medical emergency: assess the scene for safety, call 911 for any life-threatening condition, administer first aid within your training level. AED devices are located at the main entrance and break room. Do not move an injured person unless in immediate danger. Designate someone to meet paramedics.
 
-Report all medical incidents to the branch manager within 1 hour. Complete an incident report in BranchPulse within 24 hours.
+Report all medical incidents to the branch manager within 1 hour. Complete an incident report in Xyloquent Branch within 24 hours.
 
 Section 4: Severe Weather
 
@@ -1523,7 +1523,7 @@ The sales floor, fixtures, and displays must be spotless at all times. Dust and 
 
 Section 7: Seasonal and Promotional Displays
 
-Follow the promotional display guide for each campaign. Install promotional materials according to the planogram and timeline provided. Photograph completed installations and upload to BranchPulse for verification. Use only approved decoration items.
+Follow the promotional display guide for each campaign. Install promotional materials according to the planogram and timeline provided. Photograph completed installations and upload to Xyloquent Branch for verification. Use only approved decoration items.
 
 Section 8: Digital Displays and Menu Boards
 
@@ -1535,7 +1535,7 @@ Maintain clean and inviting exterior areas. Sweep entrance and sidewalk areas tw
 
 Section 10: Visual Audit and Compliance
 
-Branch managers must conduct a daily visual walk-through using the Visual Standards Checklist in BranchPulse. Mystery shopper evaluations include visual merchandising scoring. Branches scoring below 80% on visual standards will receive a corrective action plan.`,
+Branch managers must conduct a daily visual walk-through using the Visual Standards Checklist in Xyloquent Branch. Mystery shopper evaluations include visual merchandising scoring. Branches scoring below 80% on visual standards will receive a corrective action plan.`,
         createdAt: new Date('2025-11-05T11:00:00Z'),
         updatedAt: new Date('2025-12-10T15:30:00Z'),
       },
@@ -1571,7 +1571,7 @@ The branch safe is accessible only to the branch manager and designated key hold
 
 Section 5: Daily Reconciliation
 
-At the end of each shift, each register operator must count their drawer and complete a shift report. The count must match the POS system total within a $2 variance. The closing manager reconciles all registers, safe contents, and POS reports before leaving. The daily reconciliation report must be submitted in BranchPulse by midnight.
+At the end of each shift, each register operator must count their drawer and complete a shift report. The count must match the POS system total within a $2 variance. The closing manager reconciles all registers, safe contents, and POS reports before leaving. The daily reconciliation report must be submitted in Xyloquent Branch by midnight.
 
 Over/short patterns are monitored by loss prevention. Three instances of shortages exceeding $5 in a 30-day period will trigger a formal investigation.
 

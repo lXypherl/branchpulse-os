@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'BranchPulse OS',
+  title: 'Xyloquent Branch OS',
   description: 'Franchise & Multi-Branch Operations Platform',
 };
 

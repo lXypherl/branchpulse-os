@@ -64,7 +64,7 @@ export default function SideNav() {
       </nav>
 
       {/* Bottom Action */}
-      <div className="p-4">
+      <div className="p-4 space-y-3">
         <Link
           href="/audits/new"
           className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-br from-[#0058bc] to-[#0070eb] shadow-md hover:shadow-lg transition-shadow duration-200"
@@ -72,6 +72,9 @@ export default function SideNav() {
           <span className="material-symbols-outlined text-[20px]">add</span>
           New Audit
         </Link>
+        <p className="text-center text-[10px] text-slate-400">
+          Xyloquent Branch OS
+        </p>
       </div>
     </aside>
   );

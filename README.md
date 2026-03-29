@@ -1,4 +1,4 @@
-# BranchPulse OS
+# Xyloquent Branch OS
 
 Franchise & multi-branch operations platform. A centralized HQ control layer for audits, standards enforcement, issue escalation, promo execution checks, stock requests, and cross-branch visibility.
 

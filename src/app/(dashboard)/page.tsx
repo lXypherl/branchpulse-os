@@ -525,7 +525,7 @@ export default async function HQDashboardPage() {
         {/* ============================================================ */}
         <div className="flex flex-col gap-6 lg:col-span-4">
           {/* ---------------------------------------------------------- */}
-          {/* BranchPulse AI Widget                                       */}
+          {/* Xyloquent AI Widget                                          */}
           {/* ---------------------------------------------------------- */}
           <div className="relative overflow-hidden rounded-xl bg-primary-container p-6 shadow-ambient-lg">
             {/* Decorative shimmer */}
@@ -533,12 +533,17 @@ export default async function HQDashboardPage() {
             <div className="pointer-events-none absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-white/5 blur-2xl" />
 
             <div className="relative">
-              <div className="mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined filled-icon text-on-primary-container" style={{ fontSize: 20 }}>
-                  auto_awesome
-                </span>
-                <span className="text-xs font-bold uppercase tracking-wider text-on-primary-container/80">
-                  BranchPulse AI
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined filled-icon text-on-primary-container" style={{ fontSize: 20 }}>
+                    auto_awesome
+                  </span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-on-primary-container/80">
+                    Xyloquent AI
+                  </span>
+                </div>
+                <span className="text-[9px] font-medium text-on-primary-container/50 uppercase tracking-wider">
+                  Xyloquent
                 </span>
               </div>
 

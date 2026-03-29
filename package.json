@@ -1,6 +1,7 @@
 {
   "name": "branchpulse-os",
   "version": "1.0.0",
+  "description": "Xyloquent Branch OS — Franchise & Multi-Branch Operations Platform",
   "private": true,
   "scripts": {
     "dev": "next dev",
