@@ -11,7 +11,8 @@ async function main() {
   console.log('Seeding Xyloquent Branch OS database...');
 
   // Hash the default password once and reuse for all users
-  const defaultPasswordHash = await hashPassword('password123');
+  const seedPassword = process.env.SEED_PASSWORD || 'demo';
+  const defaultPasswordHash = await hashPassword(seedPassword);
 
   // ---------------------------------------------------------------------------
   // Organization

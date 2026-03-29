@@ -54,7 +54,7 @@ export default function LoginPage() {
 
   const fillDemo = (demoEmail: string) => {
     setEmail(demoEmail);
-    setPassword('password123');
+    setPassword('demo');
     setError(null);
   };
 
@@ -212,7 +212,7 @@ export default function LoginPage() {
               ))}
               <div className="px-4 py-2.5 bg-surface-container-low">
                 <p className="text-xs text-outline">
-                  All demo accounts use password: <span className="font-mono font-medium text-on-surface-variant">password123</span>
+                  All demo accounts use password: <span className="font-mono font-medium text-on-surface-variant">demo</span>
                 </p>
               </div>
             </div>

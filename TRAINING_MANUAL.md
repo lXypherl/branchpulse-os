@@ -63,7 +63,7 @@ Xyloquent Branch OS is a centralized operating layer for franchise and multi-bra
 3. Enter your **email address** and **password**
 4. Click **Sign in**
 
-**Demo Accounts:** Click the "Demo accounts" section below the login form to see all available test accounts. Click any account to auto-fill the credentials. All demo accounts use the password: `password123`
+**Demo Accounts:** Click the "Demo accounts" section below the login form to see all available test accounts. Click any account to auto-fill the credentials. All demo accounts use the password: `demo`
 
 | Demo Account | Role | Scope |
 |-------------|------|-------|
@@ -855,7 +855,7 @@ Click **SOP Library** in the sidebar.
 
 ### Login fails with "Invalid email or password"
 **Cause:** Incorrect credentials.
-**Solution:** All demo accounts use password `password123`. Check email spelling.
+**Solution:** All demo accounts use password `demo`. Check email spelling.
 
 ### "Too many login attempts" (429 error)
 **Cause:** 5+ failed login attempts within 15 minutes.

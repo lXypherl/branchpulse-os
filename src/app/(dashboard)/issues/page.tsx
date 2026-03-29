@@ -1,5 +1,6 @@
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
+import LiveTriagePanel from '@/components/issues/LiveTriagePanel';
 
 export const dynamic = 'force-dynamic';
 
@@ -534,62 +535,17 @@ export default async function IssuesPage() {
           </div>
 
           {/* -------------------------------------------------------------- */}
-          {/*  AI Triage Assistant                                           */}
+          {/*  AI Triage Assistant (Live)                                    */}
           {/* -------------------------------------------------------------- */}
-          <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-indigo-950 to-slate-900 p-6 text-white">
-            {/* Glow effect */}
-            <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/20 blur-3xl" />
-
-            <div className="relative z-10">
-              {/* Header */}
-              <div className="mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined filled-icon text-[20px] text-indigo-300">
-                  auto_awesome
-                </span>
-                <span className="text-xs font-bold uppercase tracking-widest text-indigo-300">
-                  AI Triage Assistant
-                </span>
-              </div>
-
-              {/* Quote */}
-              <p className="text-sm leading-relaxed text-indigo-100/90">
-                &ldquo;Detected pattern suggests a refrigeration coil failure in
-                Zone 4. Historical data shows 3 similar incidents in the last 90
-                days linked to the same compressor unit.&rdquo;
-              </p>
-
-              {/* Suggested Owner */}
-              <div className="mt-5">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-indigo-400">
-                  Suggested Owner
-                </span>
-                <p className="mt-0.5 text-sm font-semibold text-white">
-                  Engineering Services Unit
-                </p>
-              </div>
-
-              {/* Confidence Score */}
-              <div className="mt-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-indigo-400">
-                    Confidence Score
-                  </span>
-                  <span className="text-sm font-bold text-white">92%</span>
-                </div>
-                <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-                  <div
-                    className="h-full rounded-full bg-indigo-400"
-                    style={{ width: '92%' }}
-                  />
-                </div>
-              </div>
-
-              {/* Apply button */}
-              <button className="mt-5 w-full rounded-xl bg-white py-2.5 text-sm font-bold text-indigo-950 transition hover:bg-indigo-50">
-                Apply Suggestions
-              </button>
-            </div>
-          </div>
+          {featured && (
+            <LiveTriagePanel
+              issueId={featured.id}
+              title={featured.title}
+              description={featured.description ?? ''}
+              currentSeverity={featured.severity}
+              currentCategory={featured.category}
+            />
+          )}
 
           {/* -------------------------------------------------------------- */}
           {/*  Compliance Log                                                */}
