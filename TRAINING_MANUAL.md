@@ -58,7 +58,7 @@ Xyloquent Branch OS is a centralized operating layer for franchise and multi-bra
 
 ### Logging In
 
-1. Open your browser and navigate to the Xyloquent Branch OS URL
+1. Open your browser and navigate to **https://branch.xyloquent.com**
 2. You will see the **Welcome back** login screen
 3. Enter your **email address** and **password**
 4. Click **Sign in**

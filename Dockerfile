@@ -21,7 +21,14 @@ ENV NODE_ENV=production
 
 RUN npm run build
 
-# ---- Runner ----
+# ---- Seed / Migration runner (full deps for CLI operations) ----
+FROM base AS seed
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/prisma ./prisma
+CMD ["sh", "-c", "npx prisma db push --skip-generate && npx tsx prisma/seed.ts"]
+
+# ---- Runner (slim production server) ----
 FROM base AS runner
 WORKDIR /app
 
@@ -39,8 +46,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=deps /app/node_modules/prisma ./node_modules/prisma
-COPY --from=deps /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
 
 USER nextjs
 
@@ -49,4 +54,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["sh", "-c", "node_modules/.bin/prisma db push --skip-generate 2>&1 || echo 'WARNING: Schema sync failed - check DATABASE_URL'; node server.js"]
+CMD ["node", "server.js"]
